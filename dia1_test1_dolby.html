@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Día 1 | Curso Dolby Atmos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFFFFF;
+  --surface: #F5F5F5;
+  --surface2: #EBEBEB;
+  --border: #DCDCDC;
+  --border-bright: #C8C8C8;
+  --atmos: #5B3D8C;
+  --atmos-glow: rgba(91,61,140,0.08);
+  --atmos-bright: #7B5BB0;
+  --teal: #1B97A8;
+  --teal-soft: rgba(27,151,168,0.15);
+  --amber: #CD7F32;
+  --amber-soft: rgba(205,127,50,0.15);
+  --green: #2ECC8A;
+  --green-soft: rgba(46,204,138,0.13);
+  --red: #D95555;
+  --red-soft: rgba(217,85,85,0.13);
+  --text: #15181F;
+  --text-soft: #5C6270;
+  --text-dim: #9AA0AE;
+  --mono: 'IBM Plex Mono', monospace;
+  --display: 'Space Grotesk', sans-serif;
+  --body: 'Inter', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── HEADER ── */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 32px;
+}
+
+.hd-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: 4px;
+  background: var(--atmos);
+  color: #fff;
+}
+
+.hd-title {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-label {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-soft);
+  white-space: nowrap;
+}
+
+.progress-track {
+  width: 120px;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--atmos-bright);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+/* ── HERO ── */
+.hero {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 56px 24px 40px;
+  text-align: center;
+}
+
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--atmos-bright);
+  margin-bottom: 14px;
+}
+
+.hero-title {
+  font-family: var(--display);
+  font-size: clamp(26px, 5vw, 40px);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.hero-title span {
+  color: var(--atmos-bright);
+}
+
+.hero-sub {
+  font-size: 15px;
+  color: var(--text-soft);
+  line-height: 1.6;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ── QUIZ CONTAINER ── */
+.quiz-wrap {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* ── QUESTION CARD ── */
+.qcard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 28px 24px;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+
+.qcard.correct-card {
+  border-color: var(--green);
+  background: linear-gradient(135deg, var(--green-soft) 0%, var(--surface) 60%);
+}
+
+.qcard.wrong-card {
+  border-color: var(--red);
+  background: linear-gradient(135deg, var(--red-soft) 0%, var(--surface) 60%);
+}
+
+.q-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.q-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+.q-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid var(--border-bright);
+  color: var(--text-soft);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.q-text {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text);
+  margin-bottom: 18px;
+}
+
+.opts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.opt {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--text-soft);
+  line-height: 1.45;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.opt:hover:not(:disabled) {
+  border-color: var(--atmos-bright);
+  color: var(--text);
+  background: var(--atmos-glow);
+}
+
+.opt:disabled {
+  cursor: default;
+}
+
+.opt.reveal-correct {
+  border-color: var(--green);
+  color: var(--green);
+  background: var(--green-soft);
+}
+
+.opt.selected-correct {
+  border-color: var(--green);
+  color: var(--green);
+  background: var(--green-soft);
+}
+
+.opt.selected-wrong {
+  border-color: var(--red);
+  color: var(--red);
+  background: var(--red-soft);
+}
+
+/* ── FEEDBACK ── */
+.feedback {
+  display: none;
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: 7px;
+  font-size: 13px;
+  line-height: 1.55;
+  border-left: 3px solid;
+}
+
+.feedback.show { display: block; }
+
+.feedback.fb-correct {
+  background: var(--green-soft);
+  border-color: var(--green);
+  color: #1a5c3a;
+}
+
+.feedback.fb-correct strong {
+  color: var(--green);
+}
+
+.feedback.fb-wrong {
+  background: var(--red-soft);
+  border-color: var(--red);
+  color: #7a2020;
+}
+
+.feedback.fb-wrong strong {
+  color: var(--red);
+}
+
+/* ── SUBMIT ── */
+.submit-area {
+  text-align: center;
+  margin: 32px 0 0;
+}
+
+.btn-submit {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px 40px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: var(--border);
+  color: var(--text-dim);
+  transition: background 0.2s, color 0.2s, transform 0.1s;
+  pointer-events: none;
+}
+
+.btn-submit.ready {
+  background: var(--atmos);
+  color: #fff;
+  pointer-events: all;
+  box-shadow: 0 4px 24px rgba(107,79,160,0.35);
+}
+
+.btn-submit.ready:hover {
+  background: var(--atmos-bright);
+  transform: translateY(-1px);
+}
+
+/* ── RESULTS ── */
+.results {
+  display: none;
+  max-width: 700px;
+  margin: 40px auto 80px;
+  padding: 0 24px;
+}
+
+.results.show { display: block; }
+
+.score-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 32px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.score-ring {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid var(--atmos-bright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin: 0 auto 20px;
+  font-family: var(--display);
+}
+
+.score-ring.perfect { border-color: var(--green); }
+.score-ring.low { border-color: var(--red); }
+
+.score-num {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.score-denom {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.results-title {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.results-msg {
+  font-size: 14px;
+  color: var(--text-soft);
+  line-height: 1.6;
+  max-width: 420px;
+  margin: 0 auto 28px;
+}
+
+.bars {
+  display: flex;
+  gap: 10px;
+  max-width: 360px;
+  margin: 0 auto 28px;
+}
+
+.bar-item {
+  flex: 1;
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 14px;
+  text-align: center;
+}
+
+.bar-count {
+  font-family: var(--display);
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.bar-count.c-green { color: var(--green); }
+.bar-count.c-red { color: var(--red); }
+
+.bar-lbl {
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+/* ── RESULT DETAIL ── */
+.result-detail {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.rd-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.rd-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.rd-item:last-child { border-bottom: none; }
+
+.rd-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.rd-topic {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 3px;
+}
+
+.rd-q {
+  font-size: 13px;
+  color: var(--text-soft);
+  line-height: 1.4;
+}
+
+.rd-correct {
+  font-size: 12px;
+  color: var(--green);
+  margin-top: 4px;
+}
+
+.btn-retry {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border-bright);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  display: block;
+  margin: 0 auto;
+}
+
+.btn-retry:hover {
+  border-color: var(--atmos-bright);
+  background: var(--atmos-glow);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .header { padding: 14px 16px; }
+  .progress-track { width: 80px; }
+  .hero { padding: 36px 16px 28px; }
+  .quiz-wrap { padding: 0 16px 60px; }
+  .qcard { padding: 20px 18px 18px; }
+  .score-box { padding: 28px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="hd-left">
+    <span class="badge">Dolby Atmos</span>
+    <span class="hd-title">Quiz — Sesión 1</span>
+  </div>
+  <div class="progress-wrap">
+    <span class="progress-label" id="progLabel">0 / 10</span>
+    <div class="progress-track">
+      <div class="progress-fill" id="progFill"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Día 1 · Teoría — De canales a objetos</div>
+  <h1 class="hero-title">Quiz — <span>Sesión 1</span></h1>
+  <p class="hero-sub">10 preguntas: nomenclatura, Beds y Objects, Pan Laws, signal flow y Renderer.</p>
+</div>
+
+<!-- QUIZ -->
+<div class="quiz-wrap" id="quizWrap"></div>
+
+<div class="submit-area" id="submitArea" style="max-width:700px;margin:0 auto;padding:0 24px 40px;">
+  <button class="btn-submit" id="btnSubmit" onclick="submitQuiz()">Ver resultados</button>
+</div>
+
+<!-- RESULTS -->
+<div class="results" id="results">
+  <div class="score-box">
+    <div class="score-ring" id="scoreRing">
+      <div class="score-num" id="scoreNum">0</div>
+      <div class="score-denom">/ 10</div>
+    </div>
+    <div class="results-title" id="resultsTitle"></div>
+    <div class="results-msg" id="resultsMsg"></div>
+    <div class="bars">
+      <div class="bar-item">
+        <div class="bar-count c-green" id="countOk">0</div>
+        <div class="bar-lbl">Correctas</div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-count c-red" id="countBad">0</div>
+        <div class="bar-lbl">Incorrectas</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-detail">
+    <div class="rd-header">Detalle por pregunta</div>
+    <div id="rdBody"></div>
+  </div>
+
+  <button class="btn-retry" onclick="retryQuiz()">Intentar de nuevo</button>
+</div>
+
+<script>
+const questions = [
+  // ── Las 6 originales del HTML de teoría ──
+  {
+    topic: "Nomenclatura",
+    q: 'En el formato "7.1.4", ¿qué representa el segundo número?',
+    opts: [
+      "Canales de altura",
+      "El canal LFE (subwoofer)",
+      "Canales frontales",
+      "Número de objetos"
+    ],
+    correct: 1,
+    fb: 'En la nomenclatura multicanal, el segundo número siempre indica el canal LFE (Low Frequency Effects). El primero son altavoces horizontales y el tercero, cuando existe, son canales de altura.'
+  },
+  {
+    topic: "Renderer — Inputs",
+    q: "¿Cuántos inputs del Dolby Atmos Renderer están reservados siempre para el Bed?",
+    opts: ["8", "10", "12", "118"],
+    correct: 1,
+    fb: 'Los inputs 1–10 del Renderer están reservados para el Bed (7.1.2 = 10 canales). Los inputs 11 en adelante corresponden a Objects. El Renderer admite hasta 128 inputs en total.'
+  },
+  {
+    topic: "Renderer — Objects",
+    q: "En una sesión nueva, la primera pista asignada como Object se mapea al input...",
+    opts: ["Input 1", "Input 10", "Input 11", "Input 118"],
+    correct: 2,
+    fb: 'Los inputs 1–10 están ocupados por el Bed. El primer Object disponible es el Input 11. Por eso, es conveniente nombrar la primera pista de objeto "Object 11" para que el nombre coincida con el ID en el Renderer.'
+  },
+  {
+    topic: "Pan Laws",
+    q: "¿Qué pan law se denomina 'constant power' y es el default en la mayoría de DAWs y consolas?",
+    opts: ["0 dB", "−3 dB", "−6 dB", "+3 dB"],
+    correct: 1,
+    fb: 'Con −3 dB de pan law, una señal centrada (igual a L y R) baja 3 dB en cada canal. Esto compensa la suma acústica y mantiene el volumen aparente constante al panear a cualquier posición del campo estéreo.'
+  },
+  {
+    topic: "Loudness",
+    q: "El loudness de un mix Dolby Atmos se mide oficialmente sobre...",
+    opts: [
+      "El mix Atmos completo (todos los canales)",
+      "El re-render 5.1",
+      "El re-render binaural",
+      "Solo el Bed, sin objetos"
+    ],
+    correct: 1,
+    fb: 'La medición oficial de loudness en Dolby Atmos se realiza sobre el re-render 5.1, no sobre el mix completo. El objetivo para distribución de música en streaming es −18 LKFS.'
+  },
+  {
+    topic: "Object Audio",
+    q: "¿Cuál de los siguientes elementos incluye metadata de posición (X/Y/Z) y tamaño en tiempo real?",
+    opts: [
+      "Bed audio",
+      "Object audio",
+      "Canal LFE",
+      "Re-render binaural"
+    ],
+    correct: 1,
+    fb: 'Solo el Object audio lleva OAMD (Object Audio Metadata): posición X/Y/Z y tamaño, actualizables cuadro a cuadro. El Bed es channel-based y no tiene esta metadata de posición dinámica.'
+  },
+
+  // ── Las 4 nuevas, basadas en el HTML de teoría del Día 1 ──
+  {
+    topic: "Historia / Concepto",
+    q: "¿Cuál es el cambio fundamental que introduce Dolby Atmos respecto a los formatos de audio multicanal tradicionales como 5.1 o 7.1?",
+    opts: [
+      "Aumenta el número de canales del LFE de 1 a 4",
+      "Pasa de audio basado en canales (channel-based) a audio basado en objetos (object-based)",
+      "Elimina por completo el Bed y trabaja solo con objetos",
+      "Sustituye el estándar PCM por un codec propio de Dolby"
+    ],
+    correct: 1,
+    fb: 'En formatos tradicionales, el audio se asienta en canales fijos. Dolby Atmos introduce el concepto de objeto: cada sonido puede tener posición y tamaño que el Renderer adapta a cualquier configuración de sala, desde cine hasta audífonos.'
+  },
+  {
+    topic: "Bed vs Object",
+    q: "Un Bed en Dolby Atmos es equivalente a...",
+    opts: [
+      "Un track de objeto con posición fija en el centro",
+      "Una mezcla multicanal tradicional (channel-based) que ocupa los inputs 1–10 del Renderer",
+      "El canal LFE exclusivamente",
+      "Un re-render en formato 2.0 estéreo"
+    ],
+    correct: 1,
+    fb: 'El Bed funciona como una mezcla 7.1.2 tradicional: audio asignado a posiciones de canal fijas (L, R, C, LFE, Ls, Rs, Ltf, Rtf...). Ocupa los inputs 1–10 del Renderer. A diferencia de los Objects, no lleva metadata de posición dinámica.'
+  },
+  {
+    topic: "Signal Flow — Renderer",
+    q: "¿Cuál es la diferencia principal entre el Renderer integrado (interno al DAW) y el Renderer externo (aplicación independiente)?",
+    opts: [
+      "El Renderer interno solo funciona con micrófonos, el externo con instrumentos",
+      "El Renderer externo admite hasta 5 funciones; el interno, hasta 9",
+      "El Renderer interno opera dentro del DAW (sin latencia de red); el externo usa Dolby Audio Bridge y admite más funciones avanzadas como sincronización LTC",
+      "No hay diferencia funcional; es solo una preferencia de interfaz"
+    ],
+    correct: 2,
+    fb: 'El Renderer interno (Pro Tools Internal Renderer) corre embebido en el DAW con menor latencia y es ideal para laboratorio con audífonos. El Renderer externo es una aplicación independiente conectada via Dolby Audio Bridge; ofrece más funciones como sincronización LTC y es el que usa el estudio 7.1.4.'
+  },
+  {
+    topic: "Bus vs Pan / Divergence",
+    q: "¿Qué hace el control de Divergence en un panner surround?",
+    opts: [
+      "Ajusta el nivel del canal LFE de forma independiente",
+      "Determina el ancho de imagen de la fuente: qué tan expandida suena entre canales, más allá de su posición",
+      "Convierte una señal mono en estéreo duplicando el canal",
+      "Controla el pan law activo (0 dB vs −3 dB)"
+    ],
+    correct: 1,
+    fb: 'Divergence es un parámetro adicional al panning que define el spread o expansión de la fuente entre canales: no cambia su posición central sino qué tan ancho suena. Se combina con los controles de eje X (izq/der) e Y (frente/atrás) del panner surround.'
+  }
+];
+
+let answered = {};
+
+function buildQuiz() {
+  const wrap = document.getElementById('quizWrap');
+  wrap.innerHTML = '';
+  answered = {};
+  updateProgress();
+  document.getElementById('btnSubmit').classList.remove('ready');
+  document.getElementById('results').classList.remove('show');
+
+  questions.forEach((item, qi) => {
+    const card = document.createElement('div');
+    card.className = 'qcard';
+    card.id = 'card-' + qi;
+
+    const optsHtml = item.opts.map((o, oi) =>
+      `<button class="opt" data-oi="${oi}" onclick="selectOpt(${qi},${oi})">${o}</button>`
+    ).join('');
+
+    card.innerHTML = `
+      <div class="q-meta">
+        <span class="q-num">${String(qi+1).padStart(2,'0')} / 10</span>
+        <span class="q-tag">${item.topic}</span>
+      </div>
+      <div class="q-text">${item.q}</div>
+      <div class="opts" id="opts-${qi}">${optsHtml}</div>
+      <div class="feedback" id="fb-${qi}"></div>
+    `;
+    wrap.appendChild(card);
+  });
+}
+
+function selectOpt(qi, oi) {
+  if (answered[qi] !== undefined) return;
+  answered[qi] = oi;
+
+  const item = questions[qi];
+  const card = document.getElementById('card-' + qi);
+  const fb = document.getElementById('fb-' + qi);
+  const isCorrect = oi === item.correct;
+
+  // Disable all options, highlight result
+  document.querySelectorAll(`#opts-${qi} .opt`).forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === item.correct) btn.classList.add('reveal-correct');
+    else if (i === oi && !isCorrect) btn.classList.add('selected-wrong');
+  });
+
+  if (isCorrect) {
+    card.classList.add('correct-card');
+    fb.className = 'feedback show fb-correct';
+    fb.innerHTML = `<strong>✓ Correcto.</strong> ${item.fb}`;
+  } else {
+    card.classList.add('wrong-card');
+    fb.className = 'feedback show fb-wrong';
+    fb.innerHTML = `<strong>✗ Incorrecto.</strong> ${item.fb}`;
+  }
+
+  updateProgress();
+
+  if (Object.keys(answered).length === questions.length) {
+    document.getElementById('btnSubmit').classList.add('ready');
+    document.getElementById('btnSubmit').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+function updateProgress() {
+  const n = Object.keys(answered).length;
+  document.getElementById('progLabel').textContent = `${n} / 10`;
+  document.getElementById('progFill').style.width = (n / 10 * 100) + '%';
+}
+
+function submitQuiz() {
+  if (Object.keys(answered).length < questions.length) return;
+
+  const score = questions.filter((q, i) => answered[i] === q.correct).length;
+  const wrong = 10 - score;
+  const pct = score * 10;
+
+  document.getElementById('scoreNum').textContent = score;
+  document.getElementById('countOk').textContent = score;
+  document.getElementById('countBad').textContent = wrong;
+
+  const ring = document.getElementById('scoreRing');
+  ring.classList.remove('perfect', 'low');
+  if (score === 10) ring.classList.add('perfect');
+  else if (score < 6) ring.classList.add('low');
+
+  let title, msg;
+  if (score === 10) {
+    title = '10 / 10';
+    msg = 'Todos los conceptos del Día 1 correctos.';
+  } else if (score >= 8) {
+    title = `${score} / 10 — Aprobado`;
+    msg = `${pct}% de respuestas correctas. Revisa las preguntas incorrectas antes de la siguiente sesión.`;
+  } else if (score >= 6) {
+    title = `${score} / 10 — Aprobado con observaciones`;
+    msg = `${pct}% de respuestas correctas. Se recomienda repasar los temas indicados antes de continuar.`;
+  } else {
+    title = `${score} / 10 — Requiere repaso`;
+    msg = `${pct}% de respuestas correctas. Se recomienda revisar el material del Día 1 antes de continuar.`;
+  }
+
+  document.getElementById('resultsTitle').textContent = title;
+  document.getElementById('resultsMsg').textContent = msg;
+
+  const body = document.getElementById('rdBody');
+  body.innerHTML = '';
+  questions.forEach((item, qi) => {
+    const ok = answered[qi] === item.correct;
+    const div = document.createElement('div');
+    div.className = 'rd-item';
+    div.innerHTML = `
+      <div class="rd-icon">${ok ? '✅' : '❌'}</div>
+      <div>
+        <div class="rd-topic">${item.topic}</div>
+        <div class="rd-q">${item.q}</div>
+        ${!ok ? `<div class="rd-correct">Respuesta correcta: ${item.opts[item.correct]}</div>` : ''}
+      </div>
+    `;
+    body.appendChild(div);
+  });
+
+  document.getElementById('submitArea').style.display = 'none';
+  document.getElementById('results').classList.add('show');
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function retryQuiz() {
+  document.getElementById('submitArea').style.display = '';
+  buildQuiz();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+buildQuiz();
+</script>
+</body>
+</html>
