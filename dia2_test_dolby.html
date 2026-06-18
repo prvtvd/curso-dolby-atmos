@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Día 2 | Curso Dolby Atmos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;--bg-alt:#F6F7F9;--line:#E3E6EC;
+  --atmos:#5B3D8C;--atmos-l:#EDE6F8;
+  --good:#277A4E;--good-l:#E3F5EC;
+  --bad:#C0392B;--bad-l:#FDECEA;
+  --ink:#15181F;--ink-soft:#5C6270;
+  --font-h:'Space Grotesk',sans-serif;
+  --font-b:'Inter',sans-serif;
+  --font-m:'IBM Plex Mono',monospace;
+  --max:740px;--r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:#fff;color:var(--ink);font-family:var(--font-b);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;min-height:100vh;}
+.hero{padding:48px 24px 36px;text-align:center;border-bottom:1px solid var(--line);}
+.hero-eyebrow{font-family:var(--font-m);font-size:11px;color:var(--atmos);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;}
+.hero h1{font-family:var(--font-h);font-size:clamp(28px,5vw,42px);font-weight:700;line-height:1.15;margin-bottom:10px;}
+.hero h1 em{font-style:normal;color:var(--atmos);}
+.hero-sub{font-size:15px;color:var(--ink-soft);max-width:520px;margin:0 auto;}
+.progress-wrap{max-width:var(--max);margin:28px auto 0;padding:0 24px;}
+.progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.progress-label{font-family:var(--font-m);font-size:12px;color:var(--ink-soft);}
+.progress-count{font-family:var(--font-m);font-size:13px;font-weight:500;color:var(--atmos);}
+.progress-bar{height:4px;background:var(--atmos-l);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--atmos);border-radius:2px;transition:width .3s;width:0%;}
+.quiz-body{max-width:var(--max);margin:0 auto;padding:24px 24px 16px;}
+.q-card{background:var(--bg-alt);border:1px solid var(--line);border-radius:var(--r);padding:24px;margin-bottom:16px;}
+.q-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:6px;}
+.q-num{font-family:var(--font-m);font-size:11px;color:var(--ink-soft);letter-spacing:.08em;}
+.q-topic{font-family:var(--font-m);font-size:10px;color:var(--atmos);background:var(--atmos-l);border-radius:20px;padding:2px 10px;text-transform:uppercase;letter-spacing:.06em;}
+.q-text{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:16px;line-height:1.5;}
+.q-opts{display:grid;gap:8px;}
+.q-opt{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-radius:8px;border:1.5px solid var(--line);cursor:pointer;font-size:14px;color:var(--ink-soft);transition:all .15s;background:#fff;text-align:left;width:100%;font-family:var(--font-b);}
+.q-opt:hover:not([disabled]){border-color:var(--atmos);color:var(--ink);background:var(--atmos-l);}
+.q-opt.correct{border-color:var(--good)!important;background:var(--good-l)!important;color:var(--good)!important;}
+.q-opt.wrong{border-color:var(--bad)!important;background:var(--bad-l)!important;color:var(--bad)!important;}
+.q-opt-letter{font-family:var(--font-m);font-size:11px;font-weight:500;width:18px;flex-shrink:0;margin-top:2px;color:var(--ink-soft);}
+.q-feedback{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:13px;display:none;line-height:1.55;}
+.q-feedback.show{display:block;}
+.q-feedback.ok{background:var(--good-l);border:1px solid var(--good);color:var(--good);}
+.q-feedback.no{background:var(--bad-l);border:1px solid var(--bad);color:var(--bad);}
+.submit-area{max-width:var(--max);margin:0 auto;padding:8px 24px 48px;text-align:center;}
+.submit-note{font-size:13px;color:var(--ink-soft);margin-bottom:16px;}
+.btn{display:inline-block;padding:13px 32px;border-radius:9px;border:none;font-family:var(--font-h);font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;}
+.btn-primary{background:var(--atmos);color:#fff;}
+.btn-primary:hover:not([disabled]){background:#4a2e7a;}
+.btn-primary[disabled]{background:var(--atmos-l);color:var(--ink-soft);cursor:not-allowed;}
+.btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink-soft);}
+.btn-ghost:hover{border-color:var(--atmos);color:var(--atmos);}
+.results{max-width:var(--max);margin:0 auto;padding:0 24px 64px;display:none;}
+.results.show{display:block;}
+.score-ring-wrap{text-align:center;padding:40px 0 28px;}
+.score-ring{width:130px;height:130px;border-radius:50%;border:4px solid var(--atmos);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 16px;background:var(--atmos-l);}
+.score-ring.perfect{border-color:var(--good);background:var(--good-l);}
+.score-ring.low{border-color:var(--bad);background:var(--bad-l);}
+.score-num{font-family:var(--font-h);font-size:42px;font-weight:700;line-height:1;color:var(--atmos);}
+.score-ring.perfect .score-num{color:var(--good);}
+.score-ring.low .score-num{color:var(--bad);}
+.score-denom{font-family:var(--font-m);font-size:14px;color:var(--ink-soft);}
+.score-title{font-family:var(--font-h);font-size:20px;font-weight:700;margin-bottom:6px;}
+.score-msg{font-size:14px;color:var(--ink-soft);max-width:420px;margin:0 auto;}
+.score-bars{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0;}
+.score-bar-card{background:var(--bg-alt);border:1px solid var(--line);border-radius:var(--r);padding:16px;text-align:center;}
+.score-bar-val{font-family:var(--font-h);font-size:28px;font-weight:700;margin-bottom:4px;}
+.score-bar-val.ok{color:var(--good);}
+.score-bar-val.no{color:var(--bad);}
+.score-bar-lbl{font-size:12px;color:var(--ink-soft);}
+.rd-section{background:var(--bg-alt);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:24px;}
+.rd-section-h{padding:14px 18px;border-bottom:1px solid var(--line);font-family:var(--font-h);font-size:13px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.08em;}
+.rd-item{display:flex;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);align-items:flex-start;background:#fff;}
+.rd-item:last-child{border-bottom:none;}
+.rd-icon{font-size:15px;flex-shrink:0;margin-top:2px;}
+.rd-topic{font-family:var(--font-m);font-size:10px;color:var(--atmos);letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px;}
+.rd-q{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px;}
+.rd-answer{font-size:12px;color:var(--good);}
+.footer{background:var(--bg-alt);border-top:1px solid var(--line);padding:24px;text-align:center;}
+.footer-copy{font-size:12px;color:var(--ink-soft);}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Día 2 · Teoría — Metadata, panner y monitoring</div>
+  <h1>Quiz — <em>Sesión 2</em></h1>
+  <p class="hero-sub">10 preguntas: OAMD, OAR, Binaural Render Mode, Re-renders, Input Configuration y Loudness.</p>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-top">
+    <span class="progress-label">Progreso</span>
+    <span class="progress-count" id="progCount">0 / 10</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+</div>
+
+<div class="quiz-body" id="quizBody"></div>
+
+<div class="submit-area" id="submitArea">
+  <p class="submit-note" id="submitNote">Responde todas las preguntas para continuar.</p>
+  <button class="btn btn-primary" id="btnSubmit" disabled onclick="submitQuiz()">Ver resultados</button>
+</div>
+
+<div class="results" id="results">
+  <div class="score-ring-wrap">
+    <div class="score-ring" id="scoreRing">
+      <div class="score-num" id="scoreNum">0</div>
+      <div class="score-denom">/ 10</div>
+    </div>
+    <div class="score-title" id="resultsTitle"></div>
+    <div class="score-msg" id="resultsMsg"></div>
+  </div>
+  <div class="score-bars">
+    <div class="score-bar-card"><div class="score-bar-val ok" id="countOk">0</div><div class="score-bar-lbl">Correctas</div></div>
+    <div class="score-bar-card"><div class="score-bar-val no" id="countBad">0</div><div class="score-bar-lbl">Incorrectas</div></div>
+  </div>
+  <div class="rd-section">
+    <div class="rd-section-h">Detalle por pregunta</div>
+    <div id="rdBody"></div>
+  </div>
+  <div style="text-align:center;padding-bottom:24px;">
+    <button class="btn btn-ghost" onclick="retryQuiz()">Intentar de nuevo</button>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-copy">Curso Introductorio Dolby Atmos · Día 2 de 5</div>
+</div>
+
+<script>
+var questions = [
+  {
+    // correct: A (0)
+    topic: 'OAMD vs OAR',
+    q: '¿Cuál es la diferencia fundamental entre OAMD y OAR?',
+    opts: [
+      'OAMD captura posición y tamaño durante la mezcla; OAR reproduce el mix Atmos en el dispositivo del oyente',
+      'Son dos nombres distintos para el mismo proceso de renderizado',
+      'OAMD es el formato de archivo master; OAR es el Renderer integrado en Pro Tools',
+      'OAMD aplica a Bed audio; OAR aplica exclusivamente a Objects'
+    ],
+    correct: 0,
+    feedback: 'OAMD (Object Audio Metadata) ocurre durante la mezcla — captura posición X/Y/Z y tamaño en tiempo real. OAR (Object Audio Renderer) ocurre durante la reproducción — adapta el mix al sistema del oyente: auriculares, home theater, cine, auto.'
+  },
+  {
+    // correct: C (2)
+    topic: 'Offset Bed / Object',
+    q: 'Una sesión tiene un Bed 7.1.2 y ningún Bed adicional. ¿A qué input del Renderer se mapea el tercer Object creado?',
+    opts: [
+      'Input 3',
+      'Input 11',
+      'Input 13',
+      'Input 128'
+    ],
+    correct: 2,
+    feedback: 'Los inputs 1–10 están siempre reservados para el Bed. El primer Object = input 11, el segundo = input 12, el tercero = input 13.'
+  },
+  {
+    // correct: D (3)
+    topic: 'OAMD — parámetros',
+    q: 'En la OAMD de un Object, ¿qué representa el parámetro Z y cuál es su rango?',
+    opts: [
+      'Horizontal (izquierda/derecha), rango −1.0 a +1.0',
+      'Profundidad (frente/atrás), rango 0.0 a 1.0',
+      'Tamaño del Object, rango 0.0 a 1.0',
+      'Altura (piso/techo), rango 0.0 a 1.0'
+    ],
+    correct: 3,
+    feedback: 'Z = altura: 0.0 piso, 1.0 techo. X es horizontal (−1.0 izquierda / +1.0 derecha), Y es profundidad (0.0 frente / 1.0 atrás), Size controla el tamaño (0.0 punto / 1.0 difuso en toda la sala).'
+  },
+  {
+    // correct: B (1)
+    topic: 'Binaural Render Mode',
+    q: 'El modo Near del Binaural Render Mode se diferencia de Mid en que...',
+    opts: [
+      'Near aplica panning solo por nivel, sin HRTF ni simulación de sala',
+      'Near aplica HRTF preciso pero sin simulación de sala; Mid agrega una simulación de sala suave',
+      'Near produce mayor sensación de distancia que Mid',
+      'Near solo está disponible en el Renderer Application externo, no en DAWs integrados'
+    ],
+    correct: 1,
+    feedback: 'Near aplica HRTF para posicionar el Object con precisión, sin simulación de sala. Mid agrega una simulación de sala suave sobre el HRTF, incorporando cues de distancia sin alterar demasiado el timbre. Far tiene la simulación de sala más pronunciada.'
+  },
+  {
+    // correct: A (0)
+    topic: 'Object Control Mode',
+    q: 'En Pro Tools con Renderer integrado, ¿qué significa que el panner esté en modo "Master"?',
+    opts: [
+      'El control de posición X/Y/Z vive directamente en la pista de audio, sin Aux intermediario',
+      'El panner controla simultáneamente todos los Objects de la sesión desde un punto central',
+      'La posición del Object es controlada desde el Master Fader del bus 7.1.4',
+      'El modo Master solo está disponible cuando el Renderer Application externo está activo'
+    ],
+    correct: 0,
+    feedback: 'En modo Master el panner inmersivo vive en la pista de audio misma — es el flujo más directo y el que se usa en el lab del Día 2. Al asignar la pista al output Object con el Internal Renderer activo, el panner aparece automáticamente en la pista.'
+  },
+  {
+    // correct: C (2)
+    topic: 'Re-renders',
+    q: '¿Cuál de los siguientes anchos de re-render está disponible en el Renderer Application (externo) pero NO en DAWs con Renderer integrado?',
+    opts: [
+      '7.1.4',
+      '5.1.2',
+      '9.1.6',
+      'Binaural'
+    ],
+    correct: 2,
+    feedback: 'El Renderer Application (externo) permite re-renders hasta 9.1.6. Los DAWs con Renderer integrado llegan hasta 7.1.4. Ambos soportan Binaural, 2.0, 5.1, 5.1.2, 5.1.4 y 7.1.'
+  },
+  {
+    // correct: D (3)
+    topic: 'Re-renders — estrategia',
+    q: '¿Por qué los re-renders son la base de la estrategia "Atmos First"?',
+    opts: [
+      'Porque eliminan la necesidad de usar el Renderer Application externo',
+      'Porque permiten mezclar en estéreo y luego expandir a Atmos sin reprocesar',
+      'Porque el Renderer integrado en Pro Tools genera automáticamente todos los formatos al guardar la sesión',
+      'Porque un solo mix Atmos puede generar todos los deliverables channel-based (5.1, estéreo, stems) en un solo pass de exportación'
+    ],
+    correct: 3,
+    feedback: 'La estrategia Atmos First se basa en que un único master Atmos puede generar mediante re-renders todos los deliverables legacy (5.1, 2.0, stems) sin necesitar mezclas separadas. Re-renders pueden crearse desde la mezcla completa, Beds, Objects o grupos personalizados.'
+  },
+  {
+    // correct: B (1)
+    topic: 'Input Configuration',
+    q: '¿Cuál es la configuración de Bed más común en proyectos de música en Dolby Atmos y para qué se usa típicamente ese Bed?',
+    opts: [
+      'Dos Beds 7.1.2 independientes: uno para instrumentos y otro para voces',
+      'Un solo Bed 7.1.2 compuesto, usado principalmente para retornos de efectos (reverbs, delays) y el LFE',
+      'Un Bed 5.1 con los instrumentos más importantes, dejando el resto como Objects',
+      'No se usa Bed en música — todos los elementos van como Objects'
+    ],
+    correct: 1,
+    feedback: 'En proyectos de música la mayoría usa un único Bed 7.1.2 compuesto, destinado principalmente a retornos de FX (reverbs y delays) y al LFE. Los instrumentos y elementos con movimiento van como Objects. Este Bed compuesto alimenta los inputs 1–10 del Renderer.'
+  },
+  {
+    // correct: A (0)
+    topic: 'Monitoring — Theater vs Person',
+    q: 'En el Object View del Renderer, la vista "Theater" muestra...',
+    opts: [
+      'La sala desde arriba, como un plano de planta con la posición de los Objects',
+      'El espacio desde la perspectiva del oyente sentado en el centro de la sala',
+      'Los niveles de señal de cada Object en tiempo real',
+      'El diagrama de routing de outputs del Renderer'
+    ],
+    correct: 0,
+    feedback: 'Theater muestra la sala desde arriba como plano de planta — es la vista más usada durante la mezcla. Person muestra el espacio desde la perspectiva del oyente en el centro de la sala, útil para verificar altura y posición de Objects en relación a la experiencia auditiva.'
+  },
+  {
+    // correct: C (2)
+    topic: 'Loudness — referencia',
+    q: '¿Cuál es el target oficial de loudness para Dolby Atmos y sobre qué se mide?',
+    opts: [
+      '−23 LKFS medido sobre el mix Atmos completo con todos los canales activos',
+      '−18 LKFS medido sobre el re-render Binaural',
+      '−18 LKFS medido sobre el re-render 5.1',
+      '−16 LKFS medido sobre el re-render 7.1.4'
+    ],
+    correct: 2,
+    feedback: 'El target oficial es −18 LKFS medido sobre el re-render 5.1, con tolerancia ±1 LU y True Peak máximo de −2 dBTP. Medir sobre el binaural o el mix completo no es válido para verificar cumplimiento de la especificación de entrega.'
+  }
+];
+
+var state = {};
+
+function buildQuiz() {
+  state = {};
+  document.getElementById('progFill').style.width = '0%';
+  document.getElementById('progCount').textContent = '0 / 10';
+  document.getElementById('btnSubmit').disabled = true;
+  document.getElementById('submitNote').textContent = 'Responde todas las preguntas para continuar.';
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('submitArea').style.display = '';
+
+  var body = document.getElementById('quizBody');
+  body.innerHTML = '';
+  var letters = ['A','B','C','D'];
+
+  for (var qi = 0; qi < questions.length; qi++) {
+    var item = questions[qi];
+    var card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'qcard' + qi;
+
+    var optsHTML = '';
+    for (var oi = 0; oi < item.opts.length; oi++) {
+      optsHTML += '<button class="q-opt" id="opt_' + qi + '_' + oi + '" onclick="selectOpt(' + qi + ',' + oi + ')">' +
+        '<span class="q-opt-letter">' + letters[oi] + '</span>' +
+        '<span>' + item.opts[oi] + '</span>' +
+        '</button>';
+    }
+
+    var numStr = (qi + 1) < 10 ? '0' + (qi + 1) : '' + (qi + 1);
+    card.innerHTML =
+      '<div class="q-meta">' +
+        '<span class="q-num">' + numStr + ' / 10</span>' +
+        '<span class="q-topic">' + item.topic.toUpperCase() + '</span>' +
+      '</div>' +
+      '<div class="q-text">' + item.q + '</div>' +
+      '<div class="q-opts">' + optsHTML + '</div>' +
+      '<div class="q-feedback" id="fb' + qi + '"></div>';
+
+    body.appendChild(card);
+  }
+}
+
+function selectOpt(qi, oi) {
+  if (state[qi] !== undefined) return;
+  state[qi] = oi;
+  var item = questions[qi];
+  var isOk = (oi === item.correct);
+
+  for (var i = 0; i < item.opts.length; i++) {
+    var btn = document.getElementById('opt_' + qi + '_' + i);
+    btn.disabled = true;
+    if (i === item.correct) {
+      btn.classList.add('correct');
+    } else if (i === oi && !isOk) {
+      btn.classList.add('wrong');
+    }
+  }
+
+  var fb = document.getElementById('fb' + qi);
+  fb.textContent = (isOk ? '✓  ' : '✗  ') + item.feedback;
+  fb.className = 'q-feedback show ' + (isOk ? 'ok' : 'no');
+
+  var n = Object.keys(state).length;
+  document.getElementById('progFill').style.width = (n / 10 * 100) + '%';
+  document.getElementById('progCount').textContent = n + ' / 10';
+
+  if (n === 10) {
+    document.getElementById('btnSubmit').disabled = false;
+    document.getElementById('submitNote').textContent = 'Todas las preguntas respondidas. Puedes ver tu resultado.';
+    document.getElementById('btnSubmit').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+function submitQuiz() {
+  var score = 0;
+  for (var i = 0; i < questions.length; i++) {
+    if (state[i] === questions[i].correct) score++;
+  }
+  var wrong = 10 - score;
+
+  document.getElementById('scoreNum').textContent = score;
+  document.getElementById('countOk').textContent = score;
+  document.getElementById('countBad').textContent = wrong;
+
+  var ring = document.getElementById('scoreRing');
+  ring.classList.remove('perfect','low');
+  if (score === 10) ring.classList.add('perfect');
+  else if (score < 6) ring.classList.add('low');
+
+  var title, msg;
+  if (score === 10) { title = '10 / 10 — Perfecto'; msg = 'Dominas todos los conceptos del Día 2. Listo para el ejercicio.'; }
+  else if (score >= 8) { title = score + ' / 10 — Aprobado'; msg = 'Buen resultado. Revisa las preguntas incorrectas antes del ejercicio.'; }
+  else if (score >= 6) { title = score + ' / 10 — Aprobado con observaciones'; msg = 'Se recomienda repasar los temas indicados antes de continuar al lab.'; }
+  else { title = score + ' / 10 — Requiere repaso'; msg = 'Se recomienda revisar el material de teoría del Día 2 antes de continuar.'; }
+
+  document.getElementById('resultsTitle').textContent = title;
+  document.getElementById('resultsMsg').textContent = msg;
+
+  var rdBody = document.getElementById('rdBody');
+  rdBody.innerHTML = '';
+  for (var qi = 0; qi < questions.length; qi++) {
+    var ok = (state[qi] === questions[qi].correct);
+    var div = document.createElement('div');
+    div.className = 'rd-item';
+    div.innerHTML =
+      '<div class="rd-icon">' + (ok ? '✅' : '❌') + '</div>' +
+      '<div>' +
+        '<div class="rd-topic">' + questions[qi].topic + '</div>' +
+        '<div class="rd-q">' + questions[qi].q + '</div>' +
+        (!ok ? '<div class="rd-answer">Respuesta correcta: ' + questions[qi].opts[questions[qi].correct] + '</div>' : '') +
+      '</div>';
+    rdBody.appendChild(div);
+  }
+
+  document.getElementById('submitArea').style.display = 'none';
+  var resultsEl = document.getElementById('results');
+  resultsEl.classList.add('show');
+  resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function retryQuiz() {
+  buildQuiz();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+buildQuiz();
+</script>
+</body>
+</html>
