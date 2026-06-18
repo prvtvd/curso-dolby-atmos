@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curso Introductorio a Dolby Atmos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF9F5;
+    --bg-alt:#F1EEE6;
+    --ink:#15181F;
+    --ink-soft:#5C6270;
+    --line:#E3DFD3;
+    --bed:#CD7F32;
+    --bed-soft:#F7E9D8;
+    --object:#1B97A8;
+    --object-soft:#DEF2F4;
+    --good:#2E7D4F;
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
+    --maxw:920px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--font-body); line-height:1.6; font-size:17px;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--object-soft);}
+
+  .toc{
+    position:sticky; top:0; z-index:50; background:rgba(250,249,245,0.92);
+    backdrop-filter:blur(6px); border-bottom:1px solid var(--line);
+  }
+  .toc-inner{
+    max-width:var(--maxw); margin:0 auto; padding:10px 24px;
+    display:flex; gap:18px; overflow-x:auto; font-family:var(--font-mono);
+    font-size:12px; letter-spacing:.04em; text-transform:uppercase;
+  }
+  .toc-inner a{color:var(--ink-soft); text-decoration:none; white-space:nowrap; border-bottom:2px solid transparent; padding-bottom:4px;}
+  .toc-inner a:hover{color:var(--ink); border-color:var(--object);}
+
+  .cover{
+    max-width:var(--maxw); margin:0 auto; padding:72px 24px 50px; position:relative;
+  }
+  .cover .kicker{
+    font-family:var(--font-mono); font-size:13px; letter-spacing:.14em;
+    color:var(--object); text-transform:uppercase; margin:0 0 18px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .cover .kicker::before{content:""; display:inline-block; width:28px; height:1px; background:var(--object);}
+  .cover .course-tagline{
+    font-family:var(--font-display); font-weight:600; font-size:clamp(18px,2.6vw,24px);
+    color:var(--ink-soft); margin:0 0 22px; letter-spacing:-.01em;
+  }
+  .cover h1{
+    font-family:var(--font-display); font-weight:700; font-size:clamp(38px,7vw,64px);
+    line-height:1.04; margin:0 0 20px; letter-spacing:-.01em; max-width:760px;
+  }
+  .cover h1 .accent{color:var(--object);}
+  .cover h1 .strike{color:var(--bed); text-decoration:line-through; text-decoration-thickness:4px; text-decoration-color:var(--bed-soft);}
+  .cover p.lead{font-size:19px; color:var(--ink-soft); max-width:620px; margin:0 0 36px;}
+
+  .factrow{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line);
+    border:1px solid var(--line); border-radius:14px; overflow:hidden;
+  }
+  @media (max-width:760px){ .factrow{grid-template-columns:repeat(2,1fr);} }
+  .fact{background:var(--bg); padding:18px 20px;}
+  .fact .num{font-family:var(--font-display); font-size:28px; font-weight:700; line-height:1;}
+  .fact .lbl{font-family:var(--font-mono); font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em; margin-top:6px;}
+
+  main{max-width:var(--maxw); margin:0 auto; padding:0 24px 80px;}
+  section.block{padding:56px 0; border-top:1px solid var(--line);}
+  .eyebrow{
+    font-family:var(--font-mono); font-size:13px; letter-spacing:.1em;
+    color:var(--ink-soft); text-transform:uppercase; margin:0 0 10px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow .tag{
+    background:var(--ink); color:var(--bg); font-family:var(--font-mono);
+    font-size:11px; padding:3px 8px; border-radius:3px; letter-spacing:.05em;
+  }
+  h2{font-family:var(--font-display); font-size:clamp(24px,4vw,32px); margin:0 0 16px; font-weight:700; letter-spacing:-.01em;}
+  h3{font-family:var(--font-display); font-size:18px; margin:0 0 8px; font-weight:600;}
+  p{margin:0 0 14px; max-width:680px;}
+  .note{
+    font-size:14px; color:var(--ink-soft); border-left:2px solid var(--line);
+    padding-left:14px; margin:18px 0;
+  }
+
+  .obj-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:18px;}
+  @media (max-width:720px){ .obj-grid{grid-template-columns:1fr;} }
+  .obj-card{border:1px solid var(--line); border-radius:12px; padding:18px; background:var(--bg-alt);}
+  .obj-card .ico{
+    width:34px; height:34px; border-radius:9px; background:var(--object-soft); color:var(--object);
+    display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:700;
+    margin-bottom:10px; font-size:15px;
+  }
+  .obj-card p{font-size:14px; margin:0; color:var(--ink-soft);}
+
+  .lo-progress{
+    display:flex; align-items:center; gap:14px; font-family:var(--font-mono); font-size:13px;
+    color:var(--ink-soft); margin-bottom:18px;
+  }
+  .lo-bar{flex:1; height:8px; border-radius:999px; background:var(--bg-alt); overflow:hidden; border:1px solid var(--line);}
+  .lo-bar-fill{height:100%; width:0%; background:var(--object); transition:width .25s;}
+  .lo-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px;}
+  .lo-item{
+    display:flex; align-items:flex-start; gap:12px; border:1px solid var(--line); border-radius:10px;
+    padding:12px 14px; background:#fff; cursor:pointer; transition:.12s;
+  }
+  .lo-item:hover{border-color:var(--object);}
+  .lo-check{
+    width:22px; height:22px; flex:none; border-radius:6px; border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-size:13px; color:transparent;
+    background:#fff; margin-top:1px;
+  }
+  .lo-item.checked .lo-check{background:var(--object); border-color:var(--object); color:#fff;}
+  .lo-item.checked .lo-text{color:var(--ink-soft); text-decoration:line-through; text-decoration-color:var(--line);}
+  .lo-day{
+    font-family:var(--font-mono); font-size:11px; color:var(--object); border:1px solid var(--object-soft);
+    background:var(--object-soft); border-radius:5px; padding:2px 6px; flex:none; margin-top:2px;
+  }
+  .lo-text{font-size:14.5px;}
+
+  .timeline{display:flex; gap:6px; margin:24px 0 0; overflow-x:auto; padding-bottom:6px;}
+  .tnode{
+    flex:1; min-width:130px; border:1px solid var(--line); border-radius:12px; padding:14px;
+    cursor:pointer; background:#fff; transition:.15s; position:relative;
+  }
+  .tnode:hover{border-color:var(--object);}
+  .tnode.active{background:var(--object-soft); border-color:var(--object);}
+  .tnode .tday{font-family:var(--font-mono); font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em;}
+  .tnode .tnum{font-family:var(--font-display); font-weight:700; font-size:26px; margin:4px 0;}
+  .tnode .tplace{font-family:var(--font-mono); font-size:11px; display:flex; gap:6px; align-items:center; color:var(--ink-soft);}
+  .tnode .dot{width:8px; height:8px; border-radius:50%; display:inline-block;}
+  .dot.lab{background:var(--object);}
+  .dot.estudio{background:var(--bed);}
+  .tnode .ttitle{font-size:13px; margin-top:8px; font-weight:600; line-height:1.3;}
+
+  .day-detail{
+    margin-top:18px; border:1px solid var(--line); border-radius:14px; padding:24px; background:var(--bg-alt);
+  }
+  .day-detail h3{font-family:var(--font-display); font-size:20px; margin-bottom:4px;}
+  .day-detail .day-sub{font-family:var(--font-mono); font-size:12px; color:var(--ink-soft); margin-bottom:16px;}
+  .day-cols{display:grid; grid-template-columns:repeat(2,1fr); gap:16px;}
+  @media (max-width:720px){ .day-cols{grid-template-columns:1fr;} }
+  .day-col{border:1px solid var(--line); border-radius:10px; padding:14px; background:#fff;}
+  .day-col .dc-tag{font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--object); margin-bottom:6px; display:block;}
+  .day-col p{font-size:14px; margin:0; color:var(--ink-soft);}
+  .day-deliverable{
+    margin-top:14px; font-family:var(--font-mono); font-size:13px; padding:10px 14px;
+    border-radius:10px; background:#fff; border:1px dashed var(--line);
+  }
+  .day-deliverable b{color:var(--ink);}
+
+  .legend{display:flex; gap:18px; margin-top:10px; font-family:var(--font-mono); font-size:12px; color:var(--ink-soft); flex-wrap:wrap;}
+  .legend span{display:flex; align-items:center; gap:6px;}
+
+  .logi-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:18px;}
+  @media (max-width:720px){ .logi-grid{grid-template-columns:1fr;} }
+  .logi-card{border:1px solid var(--line); border-radius:12px; padding:20px; background:#fff;}
+  .logi-card.lab{border-top:3px solid var(--object);}
+  .logi-card.estudio{border-top:3px solid var(--bed);}
+  .logi-card h3{margin-bottom:10px;}
+  .logi-card ul{margin:0; padding-left:18px; font-size:14px; color:var(--ink-soft);}
+  .logi-card ul li{margin-bottom:6px;}
+
+  footer{max-width:var(--maxw); margin:0 auto; padding:30px 24px 60px; font-family:var(--font-mono); font-size:12px; color:var(--ink-soft); border-top:1px solid var(--line);}
+</style>
+</head>
+<body>
+
+<nav class="toc">
+  <div class="toc-inner">
+    <a href="#objetivos">Objetivos</a>
+    <a href="#resultados">Resultados de aprendizaje</a>
+    <a href="#hoja-de-ruta">Hoja de ruta</a>
+    <a href="#logistica">Logística</a>
+  </div>
+</nav>
+
+<header class="cover">
+  <p class="kicker">Dolby Atmos · Audio inmersivo</p>
+  <h1>Introducción a <span class="accent">Dolby Atmos</span></h1>
+  <p class="course-tagline">De <span class="strike">canales</span> a <span class="accent">objetos</span>. Una semana, un master propio.</p>
+  <p class="lead">Curso introductorio a Dolby Atmos con un fuerte componente práctico en Pro Tools. Partimos de cero: al final de la semana cada estudiante tendrá su propia sesión configurada, mezclada y exportada como Master File ADM BWF.</p>
+
+  <div class="factrow">
+    <div class="fact"><div class="num">10 h</div><div class="lbl">Duración total</div></div>
+    <div class="fact"><div class="num">5</div><div class="lbl">Días · 2h cada uno</div></div>
+    <div class="fact"><div class="num">0</div><div class="lbl">Experiencia previa requerida</div></div>
+    <div class="fact"><div class="num">2</div><div class="lbl">Sedes: Lab Mac + Estudio 7.1.4</div></div>
+  </div>
+</header>
+
+<main>
+
+  <section id="objetivos" class="block">
+    <p class="eyebrow"><span class="tag">Objetivos</span> Qué buscamos lograr</p>
+    <h2>Del concepto a la práctica, sin atajos</h2>
+    <p>El curso combina los fundamentos teóricos de Dolby Atmos (audio basado en objetos, formatos, signal flow) con un recorrido práctico continuo en Pro Tools: cada día se construye sobre el trabajo del día anterior, usando el Renderer interno y monitoreo binaural por audífonos en el laboratorio, con visitas puntuales al estudio 7.1.4 para escuchas y demos.</p>
+
+    <div class="obj-grid">
+      <div class="obj-card">
+        <div class="ico">01</div>
+        <h3>Fundamentos conceptuales</h3>
+        <p>Entender la diferencia entre audio basado en canales y audio basado en objetos, la nomenclatura de formatos (5.1 → 7.1.4), y cómo el Dolby Atmos Renderer organiza sus 128 entradas (Bed + Objects).</p>
+      </div>
+      <div class="obj-card">
+        <div class="ico">02</div>
+        <h3>Configuración de Pro Tools</h3>
+        <p>Configurar una sesión desde cero para trabajar con el Renderer interno: I/O Setup, Bed/Object paths, monitoreo binaural, plantillas reutilizables.</p>
+      </div>
+      <div class="obj-card">
+        <div class="ico">03</div>
+        <h3>Flujo de mezcla inmersiva</h3>
+        <p>Posicionar objetos con el panner inmersivo, organizar la mezcla con grupos y VCAs, crear buses de LFE y Reverb, y configurar monitoreo de loudness.</p>
+      </div>
+      <div class="obj-card">
+        <div class="ico">04</div>
+        <h3>Entrega y control de calidad</h3>
+        <p>Conocer las especificaciones típicas de un deliverable de streaming, ajustar la mezcla a un target de loudness, y generar un Master File ADM BWF listo para QC.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="resultados" class="block">
+    <p class="eyebrow"><span class="tag">Resultados</span> Al terminar el curso</p>
+    <h2>Vas a ser capaz de...</h2>
+    <p>Esta lista resume las competencias concretas que se van desarrollando día a día. Puedes usarla como autoevaluación — márcalas a medida que avance la semana.</p>
+
+    <div class="lo-progress">
+      <span id="loCount">0 / 10 completados</span>
+      <div class="lo-bar"><div class="lo-bar-fill" id="loBarFill"></div></div>
+    </div>
+
+    <ul class="lo-list" id="loList">
+      <li class="lo-item"><span class="lo-day">Día 1</span><span class="lo-check">✓</span><span class="lo-text">Explicar la diferencia entre Bed Audio y Object Audio, y la numeración de inputs del Renderer (1–10 Bed, 11–128 Objects).</span></li>
+      <li class="lo-item"><span class="lo-day">Día 1</span><span class="lo-check">✓</span><span class="lo-text">Configurar Pro Tools desde cero para el Renderer interno con monitoreo binaural por audífonos (Buffer 512, I/O Setup, Dead End bus).</span></li>
+      <li class="lo-item"><span class="lo-day">Día 2</span><span class="lo-check">✓</span><span class="lo-text">Configurar Master Fader, Aux Loudness (5.1) y Aux Headphone (Stereo/Binaural), y medir loudness en LKFS.</span></li>
+      <li class="lo-item"><span class="lo-day">Día 2</span><span class="lo-check">✓</span><span class="lo-text">Explicar la diferencia entre re-renders (5.1, binaural, stereo) y su uso en monitoring vs entrega.</span></li>
+      <li class="lo-item"><span class="lo-day">Día 3</span><span class="lo-check">✓</span><span class="lo-text">Usar el panner inmersivo (X/Y/Z, Size, Divergence, Binaural Render Mode) para posicionar y automatizar objetos en 3D.</span></li>
+      <li class="lo-item"><span class="lo-day">Día 3</span><span class="lo-check">✓</span><span class="lo-text">Crear buses de LFE (bass management) y Reverb multicanal (7.1.2) en una sesión de música Dolby Atmos.</span></li>
+      <li class="lo-item"><span class="lo-day">Día 4</span><span class="lo-check">✓</span><span class="lo-text">Crear VCAs y grupos para organizar los stems de una mezcla, y ajustar un VCA maestro para cumplir un target de loudness (−18 LKFS música).</span></li>
+      <li class="lo-item"><span class="lo-day">Día 4</span><span class="lo-check">✓</span><span class="lo-text">Reconocer la lógica de stems DX/MX/FX y la Input Configuration del Renderer para proyectos de post-producción.</span></li>
+      <li class="lo-item"><span class="lo-day">Día 5</span><span class="lo-check">✓</span><span class="lo-text">Realizar un bounce a Master File ADM BWF (48kHz, offline) y reimportarlo para QC.</span></li>
+      <li class="lo-item"><span class="lo-day">Día 5</span><span class="lo-check">✓</span><span class="lo-text">Reconocer una checklist básica de especificaciones de entrega para streaming (re-renders, loudness, masters por idioma).</span></li>
+    </ul>
+  </section>
+
+  <section id="hoja-de-ruta" class="block">
+    <p class="eyebrow"><span class="tag">Hoja de ruta</span> Los 5 días</p>
+    <h2>Una semana, un flujo de trabajo completo</h2>
+    <p>Cada día tiene un bloque de teoría en el laboratorio, práctica individual en iMacs con audífonos (Renderer interno), y una visita puntual al estudio 7.1.4 para escucha comparativa o demo del instructor. Toca cada día para ver el detalle.</p>
+
+    <div class="timeline" id="timeline"></div>
+    <div class="legend">
+      <span><span class="dot lab"></span> Laboratorio iMac (Renderer interno + audífonos)</span>
+      <span><span class="dot estudio"></span> Estudio Dolby Atmos 7.1.4 (Renderer externo · escucha / demo)</span>
+    </div>
+
+    <div class="day-detail" id="dayDetail"></div>
+  </section>
+
+  <section id="logistica" class="block">
+    <p class="eyebrow"><span class="tag">Logística</span> Dónde y cómo trabajamos</p>
+    <h2>Dos espacios, un mismo flujo</h2>
+    <div class="logi-grid">
+      <div class="logi-card lab">
+        <h3>Laboratorio iMac</h3>
+        <ul>
+          <li>Pro Tools con Dolby Atmos Renderer <strong>interno</strong></li>
+          <li>Monitoreo por <strong>audífonos</strong> en modo binaural</li>
+          <li>Sede principal de la práctica — días 1 a 5</li>
+          <li>Cada estudiante trabaja en su propia sesión durante toda la semana</li>
+          <li>Proyecto de música: <em>Dolby Atmos Music Exercise 95BPM</em></li>
+        </ul>
+      </div>
+      <div class="logi-card estudio">
+        <h3>Estudio Dolby Atmos 7.1.4</h3>
+        <ul>
+          <li>Sistema de altavoces 7.1.4 + Renderer <strong>externo</strong></li>
+          <li>Visitas puntuales: escuchas comparativas y demos (días 1, 2, 3 y 5)</li>
+          <li>No es para práctica individual — el grupo escucha en conjunto</li>
+          <li>Día 4: demo del instructor con proyecto de post <em>A Sound Proposal</em></li>
+          <li>Día 5 cierre: reproducción de Master Files de estudiantes + QC grupal</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">No se requiere experiencia previa con Dolby Atmos ni con Pro Tools avanzado — el curso parte de cero el día 1. Se recomienda traer audífonos personales si se prefiere, aunque el laboratorio cuenta con equipo disponible.</p>
+  </section>
+
+</main>
+
+<footer>
+  Curso introductorio a Dolby Atmos · Portada del curso · Siguiente: Día 1 — De canales a objetos
+</footer>
+
+<script>
+const loItems = document.querySelectorAll('.lo-item');
+const loCount = document.getElementById('loCount');
+const loBarFill = document.getElementById('loBarFill');
+function updateLoCount(){
+  const total = loItems.length;
+  const done = document.querySelectorAll('.lo-item.checked').length;
+  loCount.textContent = `${done} / ${total} completados`;
+  loBarFill.style.width = (done/total*100)+'%';
+}
+loItems.forEach(item=>{
+  item.addEventListener('click', ()=>{
+    item.classList.toggle('checked');
+    updateLoCount();
+  });
+});
+updateLoCount();
+
+const days = [
+  {
+    day:1, place:['lab','estudio'], title:"Fundamentos + setup binaural",
+    teoria:"¿Qué es Dolby Atmos? Channel-based vs object-based, señal + OAMD, nomenclatura de formatos (5.1 → 7.1.4), Bed (inputs 1–10) vs Objects (11–128), Renderer interno vs externo, pan laws.",
+    practica:"Binaural Headphone Rendering: Playback Engine (Buffer 512), I/O Setup limpio, Dolby Atmos tab → Internal Renderer, Dead End bus. Primer Object panner — comparar Bus vs Object. Guardar sesión base.",
+    cierre:"Tour del estudio 7.1.4: Renderer externo, Audio Bridge, LTC sync. Escucha de contenido Atmos real en altavoces (motivacional).",
+    deliverable:"Sesión base configurada con Renderer interno + monitoreo binaural."
+  },
+  {
+    day:2, place:['lab','estudio'], title:"Monitoring y loudness",
+    teoria:"Re-renders (5.1, binaural, stereo), target −18 LKFS música, metering con plug-ins 5.1, Theater vs Person view, monitoring layouts.",
+    practica:"Exercise 2 (95BPM_MIXED): importar sesión, crear Master Fader, Aux Loudness 5.1 + Aux Headphone Stereo. Medir LKFS. Adaptar Master Fader a salida estéreo (audífonos iMac).",
+    cierre:"Demo en estudio 7.1.4: misma sesión en Renderer externo, comparar re-renders en altavoces, loudness en sistema real.",
+    deliverable:"Sesión con monitoring de loudness y headphone configurado."
+  },
+  {
+    day:3, place:['lab','estudio'], title:"Panning, automation y LFE/Reverb",
+    teoria:"Object panner a fondo: X/Y/Z, Size, Divergence, Binaural Render Mode (Near/Mid/Far). Bass management (LFE) y Reverb multicanal 7.1.2.",
+    practica:"Exercise LFE & Reverb Buses + Panning (95BPM_MIXED/NOTMIXED): crear Reverb Bus 7.1.2 + LFE bus, explorar automation de pan X/Y/Z en Write/Touch/Latch, importar MIDI adicional (Inst 1 & 2).",
+    cierre:"Demo en estudio: escucha crítica del panning inmersivo, height channel en altavoces, LFE en subwoofer físico.",
+    deliverable:"Sesión con buses LFE/Reverb y automation de pan grabada."
+  },
+  {
+    day:4, place:['lab'], title:"VCAs, grupos y mezcla a loudness",
+    teoria:"VCAs vs grupos, lógica Master/sub-master, stems DX/MX/FX, Input Configuration del Renderer para post.",
+    practica:"Exercise 4 Mixing (95BPM_NOTMIXED): crear 6 VCA Masters, asignar grupos, ajustar VCA maestro hasta −18 LKFS con metering 5.1. Demo del instructor: A Sound Proposal (4 beds + 46 objects, VCAs DX/MX/FX en post).",
+    cierre:"Sin visita al estudio — día concentrado en el laboratorio.",
+    deliverable:"Sesión mezclada con VCAs, grupos y loudness en target."
+  },
+  {
+    day:5, place:['lab','estudio'], title:"Master File, deliverables y QC",
+    teoria:"Especificaciones ADM BWF, re-renders custom por plataforma, streaming vs cinema, checklist de QC (canales, metadata, picos, artefactos).",
+    practica:"Exercise 3 — bounce a Master File ADM BWF (48kHz, 24-bit, offline), reimportar para QC. Verificar re-renders en Renderer interno.",
+    cierre:"Demo en estudio: deliverables multilenguaje A Sound Proposal (EN/FR/DE). Reproducción de Master Files de estudiantes en 7.1.4. QC grupal y repaso de la semana.",
+    deliverable:"Master File ADM BWF propio + escucha en el estudio 7.1.4."
+  },
+];
+
+const timelineEl = document.getElementById('timeline');
+const dayDetailEl = document.getElementById('dayDetail');
+
+function placeDots(places){
+  return places.map(p=>`<span class="dot ${p}"></span>`).join('');
+}
+
+days.forEach((d, idx)=>{
+  const node = document.createElement('div');
+  node.className = 'tnode';
+  node.dataset.idx = idx;
+  node.innerHTML = `
+    <div class="tday">Día ${d.day}</div>
+    <div class="tnum">${String(d.day).padStart(2,'0')}</div>
+    <div class="tplace">${placeDots(d.place)} ${d.place.length>1 ? 'Lab + Estudio' : 'Laboratorio'}</div>
+    <div class="ttitle">${d.title}</div>
+  `;
+  node.addEventListener('click', ()=> showDay(idx));
+  timelineEl.appendChild(node);
+});
+
+function showDay(idx){
+  document.querySelectorAll('.tnode').forEach((n,i)=> n.classList.toggle('active', i===idx));
+  const d = days[idx];
+  dayDetailEl.innerHTML = `
+    <h3>Día ${d.day} — ${d.title}</h3>
+    <div class="day-sub">${d.place.length>1 ? 'Laboratorio iMac + Estudio 7.1.4' : 'Laboratorio iMac (sin visita a estudio)'}</div>
+    <div class="day-cols">
+      <div class="day-col"><span class="dc-tag">Teoría · Lab</span><p>${d.teoria}</p></div>
+      <div class="day-col"><span class="dc-tag">Práctica individual · iMac</span><p>${d.practica}</p></div>
+    </div>
+    <div class="day-col" style="margin-top:14px;"><span class="dc-tag">Cierre / Estudio 7.1.4</span><p>${d.cierre}</p></div>
+    <div class="day-deliverable">Entregable del día → <b>${d.deliverable}</b></div>
+  `;
+}
+showDay(0);
+</script>
+</body>
+</html>
