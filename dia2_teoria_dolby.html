@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Día 2 — Metadata, Panner y Monitoring | Curso Dolby Atmos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;--bg-alt:#F6F7F9;--ink:#15181F;--ink-soft:#5C6270;
+  --line:#E3E6EC;--atmos:#5B3D8C;--atmos-l:#EDE6F8;
+  --bed:#C07028;--bed-l:#FBF0E0;
+  --obj:#1490A2;--obj-l:#DFF3F6;
+  --red:#C0392B;--red-l:#FDECEA;
+  --green:#277A4E;--green-l:#E3F5EC;
+  --font-h:'Space Grotesk',sans-serif;
+  --font-b:'Inter',sans-serif;
+  --font-m:'IBM Plex Mono',monospace;
+  --max:900px;--r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:#fff;color:var(--ink);font-family:var(--font-b);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:99;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:0 24px;}
+.nav-inner{max-width:var(--max);margin:0 auto;display:flex;align-items:center;gap:6px;height:52px;overflow-x:auto;scrollbar-width:none;}
+.nav-inner::-webkit-scrollbar{display:none;}
+.nav-logo{font-family:var(--font-h);font-size:13px;font-weight:700;color:var(--atmos);letter-spacing:.05em;white-space:nowrap;margin-right:8px;}
+.nav-sep{width:1px;height:18px;background:var(--line);flex-shrink:0;}
+.nav-link{font-size:12px;font-weight:500;color:var(--ink-soft);text-decoration:none;white-space:nowrap;padding:4px 10px;border-radius:6px;transition:all .15s;}
+.nav-link:hover,.nav-link.act{background:var(--atmos-l);color:var(--atmos);}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#1C0F33 0%,#2E1A5A 60%,#0D2847 100%);color:#fff;padding:52px 24px 44px;}
+.hero-inner{max-width:var(--max);margin:0 auto;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px;}
+.hero-badge span{width:6px;height:6px;border-radius:50%;background:#A07EE0;display:inline-block;}
+.hero h1{font-family:var(--font-h);font-size:clamp(26px,5vw,42px);font-weight:700;line-height:1.15;margin-bottom:12px;}
+.hero h1 em{font-style:normal;color:#A07EE0;}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.72);max-width:580px;margin-bottom:24px;}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:4px 13px;font-size:12px;font-weight:500;color:rgba(255,255,255,.85);}
+
+/* WRAP */
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px;}
+.bg-alt{background:var(--bg-alt);}
+
+/* SECTION */
+section{padding:52px 0 8px;}
+.sec-eyebrow{font-family:var(--font-m);font-size:11px;font-weight:500;color:var(--atmos);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+.sec-h{font-family:var(--font-h);font-size:clamp(20px,3vw,28px);font-weight:700;line-height:1.25;margin-bottom:10px;}
+.sec-p{color:var(--ink-soft);font-size:15px;max-width:680px;margin-bottom:28px;}
+.divider{height:1px;background:var(--line);margin:36px 0;}
+
+/* CARDS */
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:22px;}
+.card-h{font-family:var(--font-h);font-size:15px;font-weight:700;margin-bottom:6px;}
+.card-p{font-size:14px;color:var(--ink-soft);line-height:1.6;}
+
+/* CALLOUT */
+.callout{border-left:4px solid var(--atmos);background:var(--atmos-l);border-radius:0 var(--r) var(--r) 0;padding:14px 18px;margin:18px 0;font-size:14px;color:var(--ink);}
+.callout strong{color:var(--atmos);}
+.callout-warn{border-left-color:var(--red);background:var(--red-l);}
+.callout-warn strong{color:var(--red);}
+.callout-green{border-left-color:var(--green);background:var(--green-l);}
+.callout-green strong{color:var(--green);}
+
+/* TABLE */
+.tbl{overflow-x:auto;margin:16px 0;}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th{background:var(--bg-alt);font-family:var(--font-h);font-weight:700;font-size:12px;text-align:left;padding:9px 13px;border-bottom:2px solid var(--line);}
+td{padding:9px 13px;border-bottom:1px solid var(--line);vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+.tag{display:inline-block;font-family:var(--font-m);font-size:11px;font-weight:500;padding:2px 9px;border-radius:20px;}
+.tag-bed{background:var(--bed-l);color:var(--bed);}
+.tag-obj{background:var(--obj-l);color:var(--obj);}
+.tag-atmos{background:var(--atmos-l);color:var(--atmos);}
+
+/* OFFSET STRIP */
+.offset-wrap{background:var(--bg-alt);border:1px solid var(--line);border-radius:var(--r);padding:24px;margin-bottom:24px;}
+.offset-label{font-family:var(--font-h);font-size:13px;font-weight:700;color:var(--ink-soft);margin-bottom:14px;}
+.offset-strip{display:flex;gap:3px;overflow-x:auto;padding-bottom:6px;}
+.o-cell{min-width:38px;height:50px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--font-m);font-size:11px;font-weight:500;flex-shrink:0;}
+.o-bed{background:var(--bed);color:#fff;}
+.o-obj{background:var(--obj);color:#fff;}
+.o-dim{background:#E8EAF0;color:#9AA0AE;}
+.offset-leg{display:flex;gap:18px;margin-top:12px;flex-wrap:wrap;}
+.o-leg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft);}
+.o-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+
+/* BED vs OBJ */
+.bvo{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px;}
+@media(max-width:580px){.bvo{grid-template-columns:1fr;}}
+.bvo-card{border-radius:var(--r);padding:22px;border:2px solid transparent;}
+.bvo-bed{background:var(--bed-l);border-color:var(--bed);}
+.bvo-obj{background:var(--obj-l);border-color:var(--obj);}
+.bvo-tag{display:inline-block;font-family:var(--font-m);font-size:11px;font-weight:500;padding:2px 10px;border-radius:20px;margin-bottom:8px;}
+.bvo-bed .bvo-tag{background:var(--bed);color:#fff;}
+.bvo-obj .bvo-tag{background:var(--obj);color:#fff;}
+.bvo-h{font-family:var(--font-h);font-size:17px;font-weight:700;margin-bottom:8px;}
+.bvo-bed .bvo-h{color:var(--bed);}
+.bvo-obj .bvo-h{color:var(--obj);}
+.bvo-list{list-style:none;font-size:14px;}
+.bvo-list li{padding:4px 0;border-bottom:1px solid rgba(0,0,0,.07);display:flex;gap:7px;align-items:flex-start;}
+.bvo-list li:last-child{border:none;}
+.bvo-list li::before{content:'›';font-weight:700;flex-shrink:0;margin-top:1px;}
+.bvo-bed .bvo-list li::before{color:var(--bed);}
+.bvo-obj .bvo-list li::before{color:var(--obj);}
+
+/* OAMD TABLE highlight */
+.oamd-row td:first-child{font-family:var(--font-m);font-weight:500;font-size:13px;}
+
+/* OAR FLOW */
+.oar-flow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:20px 0;}
+.oar-box{background:var(--bg-alt);border:1px solid var(--line);border-radius:10px;padding:12px 16px;text-align:center;min-width:110px;}
+.oar-box.hi{background:var(--atmos-l);border-color:var(--atmos);}
+.oar-box-lbl{font-family:var(--font-m);font-size:10px;color:var(--ink-soft);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px;}
+.oar-box-val{font-family:var(--font-h);font-size:14px;font-weight:700;}
+.oar-box.hi .oar-box-val{color:var(--atmos);}
+.oar-arr{font-size:18px;color:var(--line);}
+
+/* BINAURAL MODES */
+.bm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px;}
+.bm-card{border:1.5px solid var(--line);border-radius:var(--r);padding:18px;cursor:pointer;transition:all .15s;background:#fff;}
+.bm-card:hover{border-color:var(--atmos);background:var(--atmos-l);}
+.bm-card.sel{border-color:var(--atmos);background:var(--atmos-l);}
+.bm-tag{font-family:var(--font-m);font-size:12px;font-weight:500;color:var(--ink-soft);margin-bottom:6px;}
+.bm-card.sel .bm-tag{color:var(--atmos);}
+.bm-name{font-family:var(--font-h);font-size:16px;font-weight:700;margin-bottom:4px;}
+.bm-desc{font-size:13px;color:var(--ink-soft);line-height:1.5;}
+.bm-detail{background:var(--atmos-l);border:1px solid var(--atmos);border-radius:var(--r);padding:16px 20px;font-size:14px;color:var(--ink);margin-top:4px;display:none;}
+.bm-detail.show{display:block;}
+
+/* PANNER INTERACTIVO */
+.panner-demo{background:var(--bg-alt);border:1px solid var(--line);border-radius:var(--r);padding:24px;margin-bottom:24px;}
+.panner-h{font-family:var(--font-h);font-size:14px;font-weight:700;margin-bottom:4px;}
+.panner-sub{font-size:13px;color:var(--ink-soft);margin-bottom:16px;}
+.panner-stage{position:relative;width:100%;max-width:320px;margin:0 auto 16px;aspect-ratio:1;border:2px solid var(--line);border-radius:50%;background:#fff;cursor:crosshair;}
+.p-gh,.p-gv{position:absolute;background:var(--line);pointer-events:none;}
+.p-gh{top:50%;left:0;right:0;height:1px;}
+.p-gv{left:50%;top:0;bottom:0;width:1px;height:auto;}
+.p-lbl{position:absolute;font-family:var(--font-m);font-size:10px;color:var(--ink-soft);pointer-events:none;}
+.p-lbl.f{top:5px;left:50%;transform:translateX(-50%);}
+.p-lbl.b{bottom:5px;left:50%;transform:translateX(-50%);}
+.p-lbl.l{left:5px;top:50%;transform:translateY(-50%);}
+.p-lbl.r{right:5px;top:50%;transform:translateY(-50%);}
+.p-dot{position:absolute;width:20px;height:20px;border-radius:50%;background:var(--atmos);border:3px solid #fff;box-shadow:0 2px 8px rgba(91,61,140,.4);transform:translate(-50%,-50%);cursor:grab;}
+.p-dot:active{cursor:grabbing;}
+.p-coords{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+.p-coord{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center;}
+.p-coord-lbl{font-family:var(--font-m);font-size:10px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
+.p-coord-val{font-family:var(--font-m);font-size:16px;font-weight:500;color:var(--atmos);}
+.p-size{margin-top:14px;}
+.p-size-lbl{font-size:12px;color:var(--ink-soft);margin-bottom:5px;display:flex;justify-content:space-between;}
+input[type=range]{width:100%;accent-color:var(--atmos);}
+.p-note{font-size:12px;color:var(--ink-soft);text-align:center;margin-top:8px;}
+
+/* MONITORING TABS */
+.mon-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;}
+.mon-tab{padding:6px 15px;border-radius:8px;border:1px solid var(--line);font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:var(--ink-soft);transition:all .15s;}
+.mon-tab.act{background:var(--atmos);color:#fff;border-color:var(--atmos);}
+.mon-panel{display:none;background:var(--bg-alt);border:1px solid var(--line);border-radius:var(--r);padding:18px;}
+.mon-panel.act{display:block;}
+.mon-panel h4{font-family:var(--font-h);font-size:15px;font-weight:700;margin-bottom:8px;}
+.mon-panel p{font-size:14px;color:var(--ink-soft);margin-bottom:10px;}
+.mon-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:10px;}
+.mon-item{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;}
+.mon-item-lbl{font-family:var(--font-m);font-size:10px;color:var(--ink-soft);letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px;}
+.mon-item-val{font-size:14px;font-weight:600;}
+
+/* TV / PERSON */
+.vp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
+@media(max-width:540px){.vp-grid{grid-template-columns:1fr;}}
+
+/* LOUDNESS */
+.lf-flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0;}
+.lf-box{background:var(--bg-alt);border:1px solid var(--line);border-radius:10px;padding:12px 16px;text-align:center;min-width:105px;}
+.lf-box.hi{background:var(--green-l);border-color:var(--green);}
+.lf-box-lbl{font-family:var(--font-m);font-size:10px;color:var(--ink-soft);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px;}
+.lf-box-val{font-family:var(--font-h);font-size:15px;font-weight:700;}
+.lf-box.hi .lf-box-val{color:var(--green);}
+.lf-arr{font-size:18px;color:var(--line);}
+
+/* RERENDERS */
+.rr-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
+@media(max-width:560px){.rr-grid{grid-template-columns:1fr;}}
+
+/* INPUT CONFIG */
+.stem-diagram{background:var(--bg-alt);border:1px solid var(--line);border-radius:var(--r);padding:22px;margin-bottom:20px;}
+.stem-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+.stem-row:last-child{margin-bottom:0;}
+.stem-chip{font-family:var(--font-m);font-size:11px;padding:4px 10px;border-radius:6px;font-weight:500;}
+.chip-bed{background:var(--bed-l);color:var(--bed);}
+.chip-obj{background:var(--obj-l);color:var(--obj);}
+.chip-stem{background:var(--atmos-l);color:var(--atmos);}
+.stem-arr{font-size:14px;color:var(--line);}
+.stem-lbl{font-size:13px;color:var(--ink-soft);}
+
+/* FOOTER */
+.footer{background:var(--bg-alt);border-top:1px solid var(--line);padding:28px 24px;margin-top:56px;text-align:center;}
+.footer-nav{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:10px;}
+.footer-link{font-size:13px;color:var(--ink-soft);text-decoration:none;font-weight:500;}
+.footer-link:hover{color:var(--atmos);}
+.footer-copy{font-size:12px;color:#9AA0AE;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <span class="nav-logo">Dolby Atmos</span>
+    <div class="nav-sep"></div>
+    <a class="nav-link act" href="#offset">Bed & Object</a>
+    <a class="nav-link" href="#oar">OAMD & OAR</a>
+    <a class="nav-link" href="#panner">Panner</a>
+    <a class="nav-link" href="#binaural">Binaural Render Mode</a>
+    <a class="nav-link" href="#rerenders">Re-renders</a>
+    <a class="nav-link" href="#inputconfig">Input Config</a>
+    <a class="nav-link" href="#monitoring">Monitoring</a>
+    <a class="nav-link" href="#loudness">Loudness</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge"><span></span> Día 2 · Teoría</div>
+    <h1>Metadata, panner<br>y <em>monitoring</em></h1>
+    <p class="hero-sub">Cómo se numeran los inputs del Renderer, qué es OAMD vs OAR, el panner inmersivo, Binaural Render Mode, re-renders, Input Configuration y monitoring layouts.</p>
+    <div class="hero-pills">
+      <span class="pill">Offset Bed 1–10 / Object 11+</span>
+      <span class="pill">OAMD · OAR</span>
+      <span class="pill">Binaural Render Mode Off / Near / Mid / Far</span>
+      <span class="pill">Re-renders</span>
+      <span class="pill">Input Configuration</span>
+      <span class="pill">Theater vs Person</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S1: OFFSET ═══ -->
+<div class="wrap">
+<section id="offset">
+  <p class="sec-eyebrow">Sección 01</p>
+  <h2 class="sec-h">Numeración de inputs: Bed y Object</h2>
+  <p class="sec-p">El Renderer recibe hasta 128 pistas de audio. Los primeros 10 inputs están <strong>siempre reservados</strong> para el Bed, sin importar cuántos canales uses realmente. A partir del input 11 entran los Objects.</p>
+
+  <div class="offset-wrap">
+    <div class="offset-label">128 inputs del Renderer — distribución fija</div>
+    <div class="offset-strip" id="oStrip"></div>
+    <div class="offset-leg">
+      <div class="o-leg"><div class="o-dot" style="background:var(--bed)"></div>Inputs 1–10 · Bed (siempre reservados)</div>
+      <div class="o-leg"><div class="o-dot" style="background:var(--obj)"></div>Inputs 11–128 · Objects (hasta 118)</div>
+      <div class="o-leg"><div class="o-dot" style="background:#E8EAF0"></div>Inputs adicionales</div>
+    </div>
+  </div>
+
+  <div class="bvo">
+    <div class="bvo-card bvo-bed">
+      <span class="bvo-tag">BED — inputs 1–10</span>
+      <div class="bvo-h">Canal fijo</div>
+      <ul class="bvo-list">
+        <li>Ocupa inputs 1–10 (formato default: 7.1.2)</li>
+        <li>Sin metadata de posición dinámica</li>
+        <li>Se reproduce en el canal exacto asignado</li>
+        <li>Ideal para ambientes, reverbs, LFE</li>
+        <li>Logic Pro, Cubase y Studio One: solo un Bed</li>
+      </ul>
+    </div>
+    <div class="bvo-card bvo-obj">
+      <span class="bvo-tag">OBJECT — inputs 11–128</span>
+      <div class="bvo-h">Audio con posición</div>
+      <ul class="bvo-list">
+        <li>Primer Object → input 11</li>
+        <li>Hasta 118 objects simultáneos</li>
+        <li>Lleva OAMD: posición X/Y/Z + tamaño</li>
+        <li>El Renderer ubica el sonido en el espacio</li>
+        <li>Ideal para diálogos, efectos, elementos en movimiento</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Múltiples Beds:</strong> cada Bed adicional más allá del primero resta inputs disponibles para Objects, ya que el total siempre es 128. Además, hay una sola configuración de Binaural Render Mode por canal de Bed — si cambias el modo del canal L de un Bed, cambia ese canal en todos los Beds definidos.
+  </div>
+</section>
+</div>
+
+<!-- ═══ S2: OAMD & OAR ═══ -->
+<div class="bg-alt" style="padding:8px 0 32px;">
+<div class="wrap">
+<section id="oar">
+  <p class="sec-eyebrow">Sección 02</p>
+  <h2 class="sec-h">OAMD y OAR — dos procesos distintos</h2>
+  <p class="sec-p">Dolby Atmos maneja el audio de Objects mediante dos procesos separados: uno ocurre durante la mezcla y el otro durante la reproducción.</p>
+
+  <div class="bvo">
+    <div class="card" style="border-top:3px solid var(--obj);">
+      <div class="card-h" style="color:var(--obj);">OAMD — Object Audio Metadata</div>
+      <div class="card-p">Presente durante la <strong>mezcla</strong>. Captura la información de posición (X/Y/Z) y tamaño de cada Object en tiempo real a medida que se realizan cambios. Se graba como automatización dentro de la sesión y viaja empaquetada con el audio en el master file.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--atmos);">
+      <div class="card-h" style="color:var(--atmos);">OAR — Object Audio Renderer</div>
+      <div class="card-p">Presente durante la <strong>reproducción</strong>. El dispositivo del oyente utiliza el OAR para reproducir el mix Dolby Atmos completo, adaptándolo al sistema de reproducción disponible: auriculares, home theater, cine, auto, etc.</div>
+    </div>
+  </div>
+
+  <p style="font-family:var(--font-h);font-size:15px;font-weight:700;margin-bottom:12px;">El ciclo completo de un mix Atmos</p>
+  <div class="oar-flow">
+    <div class="oar-box"><div class="oar-box-lbl">Mixer panea</div><div class="oar-box-val">OAMD captura</div></div>
+    <div class="oar-arr">→</div>
+    <div class="oar-box hi"><div class="oar-box-lbl">Master file</div><div class="oar-box-val">ADM BWF</div></div>
+    <div class="oar-arr">→</div>
+    <div class="oar-box"><div class="oar-box-lbl">Distribución</div><div class="oar-box-val">Streaming / Disc</div></div>
+    <div class="oar-arr">→</div>
+    <div class="oar-box hi"><div class="oar-box-lbl">Dispositivo oyente</div><div class="oar-box-val">OAR renderiza</div></div>
+  </div>
+
+  <div class="callout-green callout">
+    <strong>Por qué importa:</strong> esta es la razón por la que un solo mix Atmos puede sonar bien en auriculares, home theater, cine o el auto — el OAR de cada dispositivo se encarga de adaptarlo al sistema disponible, usando las coordenadas OAMD del master.
+  </div>
+
+  <div class="divider"></div>
+
+  <p class="sec-eyebrow">Metadata de objeto</p>
+  <h3 style="font-family:var(--font-h);font-size:22px;font-weight:700;margin-bottom:10px;">OAMD — parámetros</h3>
+  <p style="font-size:15px;color:var(--ink-soft);margin-bottom:16px;">Cada Object lleva adjunta esta información en cada frame de audio:</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Parámetro</th><th>Rango</th><th>Descripción</th></tr></thead>
+      <tbody class="oamd-row">
+        <tr><td>X (horizontal)</td><td>−1.0 → +1.0</td><td>Izquierda (−1) · Centro (0) · Derecha (+1)</td></tr>
+        <tr><td>Y (profundidad)</td><td>0.0 → 1.0</td><td>Frente (0) → Atrás (1)</td></tr>
+        <tr><td>Z (altura)</td><td>0.0 → 1.0</td><td>Piso (0) → Techo (1)</td></tr>
+        <tr><td>Size (tamaño)</td><td>0.0 → 1.0</td><td>Punto (0) → difuso en toda la sala (1)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+</div>
+</div>
+
+<!-- ═══ S3: PANNER ═══ -->
+<div class="wrap">
+<section id="panner">
+  <p class="sec-eyebrow">Sección 03</p>
+  <h2 class="sec-h">El panner inmersivo</h2>
+  <p class="sec-p">En Pro Tools, al asignar una pista a un Object aparece el panner 3D. Controla las coordenadas OAMD en tiempo real. El Object Control Mode <strong>Master</strong> es el modo de trabajo del lab — el panner vive en la pista de audio misma, sin Aux intermediario.</p>
+
+  <div class="panner-demo">
+    <div class="panner-h">Demo — arrastra el objeto en el plano X/Y</div>
+    <div class="panner-sub">Izquierda/derecha = X · Frente/atrás = Y · Z y Size se controlan por separado en el panner real.</div>
+    <div class="panner-stage" id="pStage">
+      <div class="p-gh"></div><div class="p-gv"></div>
+      <span class="p-lbl f">FRENTE</span><span class="p-lbl b">ATRÁS</span>
+      <span class="p-lbl l">IZQ</span><span class="p-lbl r">DER</span>
+      <div class="p-dot" id="pDot"></div>
+    </div>
+    <div class="p-coords">
+      <div class="p-coord"><div class="p-coord-lbl">X · horizontal</div><div class="p-coord-val" id="cX">0.00</div></div>
+      <div class="p-coord"><div class="p-coord-lbl">Y · profundidad</div><div class="p-coord-val" id="cY">0.00</div></div>
+      <div class="p-coord"><div class="p-coord-lbl">Z · altura</div><div class="p-coord-val" id="cZ">0.00</div></div>
+    </div>
+    <div class="p-size">
+      <div class="p-size-lbl"><span>Size</span><span id="sV">0.00</span></div>
+      <input type="range" id="sSlider" min="0" max="100" value="0">
+    </div>
+    <div class="p-note">Arrastra el punto para mover el Object · Usa el slider para Size</div>
+  </div>
+</section>
+</div>
+
+<!-- ═══ S4: BINAURAL RENDER MODE ═══ -->
+<div class="bg-alt" style="padding:8px 0 32px;">
+<div class="wrap">
+<section id="binaural">
+  <p class="sec-eyebrow">Sección 04</p>
+  <h2 class="sec-h">Binaural Render Mode</h2>
+  <p class="sec-p">Además del OAR que maneja las salidas a altavoces, el Renderer incluye un <strong>Binaural Renderer</strong> separado para monitorear en auriculares. Aplica dos tipos de procesamiento combinados: HRTFs (Head-Related Transfer Functions) para posicionar el audio, y un modelo de sala que produce reflexiones según la distancia — haciendo que el sonido se perciba <em>fuera de la cabeza</em>.</p>
+
+  <div class="callout">
+    <strong>Es metadata de programa:</strong> el Binaural Render Mode se escribe en el master file completo, no por sección. Se usa durante la codificación al codec AC-4 IMS para dispositivos Android y algunas aplicaciones iOS.
+  </div>
+
+  <p style="font-size:15px;font-weight:600;margin:20px 0 12px;">Cuatro modos disponibles — clic para ver detalles</p>
+
+  <div class="bm-grid">
+    <div class="bm-card" onclick="selBM(this,'off')">
+      <div class="bm-tag">Modo</div>
+      <div class="bm-name">Off</div>
+      <div class="bm-desc">Panning solo por nivel, similar a un pan estéreo convencional. La posición X se comporta como un control de balance.</div>
+    </div>
+    <div class="bm-card" onclick="selBM(this,'near')">
+      <div class="bm-tag">Modo</div>
+      <div class="bm-name">Near</div>
+      <div class="bm-desc">HRTF preciso que simula la posición desde el Object hasta los oídos del oyente. Sin simulación de sala.</div>
+    </div>
+    <div class="bm-card" onclick="selBM(this,'mid')">
+      <div class="bm-tag">Modo</div>
+      <div class="bm-name">Mid</div>
+      <div class="bm-desc">Near + simulación suave de sala. Agrega cues de distancia sutiles preservando el timbre del Object.</div>
+    </div>
+    <div class="bm-card" onclick="selBM(this,'far')">
+      <div class="bm-tag">Modo</div>
+      <div class="bm-name">Far</div>
+      <div class="bm-desc">Similar a Mid pero con simulación de sala más pronunciada — mayor sensación de distancia del oyente.</div>
+    </div>
+  </div>
+
+  <div class="bm-detail" id="bmDetail"></div>
+
+  <div class="tbl" style="margin-top:20px;">
+    <table>
+      <thead><tr><th>Modo</th><th>HRTF</th><th>Simulación de sala</th><th>Uso típico</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Off</strong></td><td>No</td><td>No</td><td>Elementos que no requieren espacialización</td></tr>
+        <tr><td><strong>Near</strong></td><td>Sí</td><td>No</td><td>Batería, percusión, elementos con impacto inmediato</td></tr>
+        <tr><td><strong>Mid</strong></td><td>Sí</td><td>Suave</td><td>Voces, instrumentos en plano medio</td></tr>
+        <tr><td><strong>Far</strong></td><td>Sí</td><td>Pronunciada</td><td>Guitarras/synths con reverb, elementos de fondo</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <strong>Buenas prácticas:</strong> distribuir Objects equitativamente entre Near, Mid y Far. Para acercar un Object al oyente sin que "se despegue de la pared" en altavoces, usar Near — funciona en auriculares sin sacrificar la mezcla en altavoces. En general es preferible panear Objects cerca del borde del cuarto virtual.
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>Atención con múltiples Beds:</strong> hay una sola configuración de Binaural Render Mode por canal de Bed. Si defines tres Beds y cambias el canal L del primero a Near, ese cambio se aplica al canal L de los otros dos Beds también.
+  </div>
+</section>
+</div>
+</div>
+
+<!-- ═══ S5: RE-RENDERS ═══ -->
+<div class="wrap">
+<section id="rerenders">
+  <p class="sec-eyebrow">Sección 05</p>
+  <h2 class="sec-h">Re-renders / Channel-based exports</h2>
+  <p class="sec-p">Re-renderizar es el proceso de generar salidas channel-based desde un Dolby Atmos Renderer. Permiten mezclar en Atmos sin necesitar mezclas separadas para deliverables legacy en 5.1, estéreo, etc.</p>
+
+  <div class="rr-grid">
+    <div class="card" style="border-top:3px solid var(--obj);">
+      <div class="card-h">DAW con Renderer integrado</div>
+      <div class="card-p">Re-renders disponibles: Binaural, 2.0, 5.1, 5.1.2, 5.1.4, 7.1 y 7.1.4. Generalmente se hacen como operación de export offline.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--atmos);">
+      <div class="card-h">Renderer App (externo)</div>
+      <div class="card-p">Agrega anchos adicionales hasta <strong>9.1.6</strong> y la posibilidad de usar grupos para generar re-renders de stems personalizados (DX, MX, FX, M&amp;E, etc.). En real-time o export offline.</div>
+    </div>
+  </div>
+
+  <div class="callout-green callout">
+    <strong>La estrategia Atmos First:</strong> un solo mix Atmos puede generar todos los deliverables channel-based en un solo pass de exportación: mezcla completa, Beds, Objects o grupos personalizados. Esto elimina la necesidad de mezclas separadas para cada formato.
+  </div>
+
+  <div class="callout">
+    <strong>Re-renders en el lab (Día 3):</strong> configuraremos Loudness Re-Render = 5.1 y Headphone Re-Render = Binaural en el Renderer integrado de Pro Tools. Veremos los re-renders en funcionamiento con Aux tracks.
+  </div>
+</section>
+</div>
+
+<!-- ═══ S6: INPUT CONFIG ═══ -->
+<div class="bg-alt" style="padding:8px 0 32px;">
+<div class="wrap">
+<section id="inputconfig">
+  <p class="sec-eyebrow">Sección 06</p>
+  <h2 class="sec-h">Input Configuration: nombres y grupos</h2>
+  <p class="sec-p">La configuración default del Renderer asigna los primeros 10 inputs a un Bed 7.1.2 y los 118 restantes como Objects. Esta configuración se puede personalizar para organizar Beds y Objects en grupos — útil especialmente en post-producción.</p>
+
+  <p style="font-size:14px;font-weight:600;margin-bottom:14px;color:var(--ink-soft);">Ejemplo: workflow de post-producción con stems</p>
+  <div class="stem-diagram">
+    <div class="stem-row">
+      <span class="stem-chip chip-obj">Dialog Objects</span>
+      <span class="stem-arr">+</span>
+      <span class="stem-chip chip-bed">Dialog Bed</span>
+      <span class="stem-arr">→</span>
+      <span class="stem-chip chip-stem">DX Stem</span>
+      <span class="stem-lbl">— Dialog</span>
+    </div>
+    <div class="stem-row">
+      <span class="stem-chip chip-obj">FX Objects</span>
+      <span class="stem-arr">+</span>
+      <span class="stem-chip chip-bed">FX Bed</span>
+      <span class="stem-arr">→</span>
+      <span class="stem-chip chip-stem">FX Stem</span>
+      <span class="stem-lbl">— Effects</span>
+    </div>
+    <div class="stem-row">
+      <span class="stem-chip chip-obj">Music Objects</span>
+      <span class="stem-arr">+</span>
+      <span class="stem-chip chip-bed">Music Bed</span>
+      <span class="stem-arr">→</span>
+      <span class="stem-chip chip-stem">MX Stem</span>
+      <span class="stem-lbl">— Music</span>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Para música:</strong> la mayoría de proyectos usan un solo Bed 7.1.2 compuesto (reverbs, delays y LFE), con todos los instrumentos como Objects. El Bed compuesto alimenta los inputs 1–10 del Renderer.
+  </div>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Grupos standard</th><th>Código</th><th>Uso</th></tr></thead>
+      <tbody>
+        <tr><td>Dialog</td><td><span class="tag tag-atmos">DX</span></td><td>Diálogos en post-producción</td></tr>
+        <tr><td>Music</td><td><span class="tag tag-atmos">MX</span></td><td>Música</td></tr>
+        <tr><td>Effects</td><td><span class="tag tag-atmos">FX</span></td><td>Efectos de sonido</td></tr>
+        <tr><td>Narration</td><td><span class="tag tag-atmos">NR</span></td><td>Narración / voz en off</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>Logic Pro y Cubase:</strong> no permiten múltiples Beds ni grouping de inputs. Solo soportan un único Bed 7.1.2.
+  </div>
+
+  <p style="font-size:14px;color:var(--ink-soft);margin-top:16px;">El Renderer App y algunos DAWs permiten asignar <strong>nombres descriptivos</strong> a Beds y Objects. Esos nombres se escriben en el master file y son muy útiles al reimportar un ADM BWF, ya que permiten identificar qué contenía cada track.</p>
+</section>
+</div>
+</div>
+
+<!-- ═══ S7: MONITORING ═══ -->
+<div class="wrap">
+<section id="monitoring">
+  <p class="sec-eyebrow">Sección 07</p>
+  <h2 class="sec-h">Monitoring layouts</h2>
+  <p class="sec-p">El Renderer puede monitorear el mix en distintos layouts. En el lab trabajamos con <strong>Binaural</strong>, pero es fundamental entender qué representa cada opción.</p>
+
+  <div class="mon-tabs">
+    <button class="mon-tab act" onclick="setMon('binaural',this)">Binaural (lab)</button>
+    <button class="mon-tab" onclick="setMon('714',this)">7.1.4</button>
+    <button class="mon-tab" onclick="setMon('51',this)">5.1</button>
+    <button class="mon-tab" onclick="setMon('20',this)">2.0 Estéreo</button>
+  </div>
+
+  <div class="mon-panel act" id="mon-binaural">
+    <h4>🎧 Binaural — lo que usamos en el lab</h4>
+    <p>Simula el sistema 7.1.4 completo en auriculares usando HRTFs. El Binaural Renderer renderiza todos los canales de Bed y los Objects para crear una experiencia inmersiva en audífonos.</p>
+    <div class="mon-items">
+      <div class="mon-item"><div class="mon-item-lbl">HW Buffer mínimo</div><div class="mon-item-val">512 samples</div></div>
+      <div class="mon-item"><div class="mon-item-lbl">Procesamiento</div><div class="mon-item-val">HRTF + room model</div></div>
+      <div class="mon-item"><div class="mon-item-lbl">Headphone Re-Render</div><div class="mon-item-val">Binaural</div></div>
+    </div>
+  </div>
+  <div class="mon-panel" id="mon-714">
+    <h4>🔊 7.1.4 — el estudio</h4>
+    <p>Layout de referencia completo: 7 canales de sala (L, C, R, Ls, Rs, Lss, Rss), 1 LFE y 4 canales de altura (Ltf, Rtf, Ltb, Rtb). Es el sistema donde haremos la demo de cierre del Día 2.</p>
+    <div class="mon-items">
+      <div class="mon-item"><div class="mon-item-lbl">Canales de sala</div><div class="mon-item-val">7</div></div>
+      <div class="mon-item"><div class="mon-item-lbl">LFE</div><div class="mon-item-val">1</div></div>
+      <div class="mon-item"><div class="mon-item-lbl">Canales de altura</div><div class="mon-item-val">4</div></div>
+      <div class="mon-item"><div class="mon-item-lbl">Total outputs</div><div class="mon-item-val">12</div></div>
+    </div>
+  </div>
+  <div class="mon-panel" id="mon-51">
+    <h4>📻 5.1 — re-render de referencia para loudness</h4>
+    <p>El re-render 5.1 es clave: el <strong>loudness oficial se mide sobre él</strong>, no sobre el mix completo. Siempre disponible como salida de monitoreo.</p>
+    <div class="mon-items">
+      <div class="mon-item"><div class="mon-item-lbl">Canales</div><div class="mon-item-val">6 (5.1)</div></div>
+      <div class="mon-item"><div class="mon-item-lbl">Uso principal</div><div class="mon-item-val">Medición loudness</div></div>
+      <div class="mon-item"><div class="mon-item-lbl">Target</div><div class="mon-item-val">−18 LKFS</div></div>
+    </div>
+  </div>
+  <div class="mon-panel" id="mon-20">
+    <h4>🎵 Estéreo 2.0</h4>
+    <p>Downmix derivado del 5.1, controlado por los parámetros de downmix del master. Verificar en estéreo es fundamental — el LFE <strong>se descarta</strong> en el downmix a estéreo.</p>
+    <div class="mon-items">
+      <div class="mon-item"><div class="mon-item-lbl">Canales</div><div class="mon-item-val">2</div></div>
+      <div class="mon-item"><div class="mon-item-lbl">Derivado de</div><div class="mon-item-val">Re-render 5.1</div></div>
+      <div class="mon-item"><div class="mon-item-lbl">LFE</div><div class="mon-item-val">Descartado</div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <p class="sec-eyebrow">Vista de monitoreo en el Renderer</p>
+  <h3 style="font-family:var(--font-h);font-size:20px;font-weight:700;margin-bottom:10px;">Theater vs Person</h3>
+  <p style="font-size:15px;color:var(--ink-soft);margin-bottom:18px;">En el Object View del Renderer hay dos perspectivas para visualizar dónde están los Objects en la sala:</p>
+
+  <div class="vp-grid">
+    <div class="card" style="border-top:3px solid var(--atmos);">
+      <div class="card-h">🏛 Theater</div>
+      <div class="card-p">Vista aérea de la sala — como un plano de planta. La posición de los Objects se muestra según su ubicación real en el espacio. Es la vista más usada durante la mezcla. Doble clic = vista completamente aérea (overhead).</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--bed);">
+      <div class="card-h">🧑 Person</div>
+      <div class="card-p">Vista desde la perspectiva del oyente sentado en el centro de la sala. Útil para verificar la altura y posición de los Objects en relación directa a la experiencia auditiva.</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>En el Object View también se puede mostrar:</strong> números de Object (para correlacionar con el panner del DAW), configuración de Binaural Render Mode por Object (Near/Mid/Far), y membresía a grupos estándar (DX, MX, FX, NR).
+  </div>
+</section>
+</div>
+
+<!-- ═══ S8: LOUDNESS INTRO ═══ -->
+<div class="bg-alt" style="padding:8px 0 48px;">
+<div class="wrap">
+<section id="loudness" style="padding-bottom:0;">
+  <p class="sec-eyebrow">Sección 08</p>
+  <h2 class="sec-h">Intro a Loudness en Dolby Atmos</h2>
+  <p class="sec-p">El loudness no se mide sobre el mix completo. Se mide sobre el <strong>re-render 5.1</strong> — el denominador común que garantiza consistencia entre sistemas.</p>
+
+  <div class="lf-flow">
+    <div class="lf-box"><div class="lf-box-lbl">Mix Atmos</div><div class="lf-box-val">Completo</div></div>
+    <div class="lf-arr">→</div>
+    <div class="lf-box hi"><div class="lf-box-lbl">Re-render</div><div class="lf-box-val">5.1</div></div>
+    <div class="lf-arr">→</div>
+    <div class="lf-box hi"><div class="lf-box-lbl">Medición</div><div class="lf-box-val">−18 LKFS</div></div>
+    <div class="lf-arr">→</div>
+    <div class="lf-box"><div class="lf-box-lbl">Tolerancia</div><div class="lf-box-val">± 1 LU</div></div>
+  </div>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Parámetro</th><th>Valor</th></tr></thead>
+      <tbody>
+        <tr><td>Target de loudness</td><td><strong>−18 LKFS</strong></td></tr>
+        <tr><td>Base de medición</td><td><strong>Re-render 5.1</strong></td></tr>
+        <tr><td>Tolerancia</td><td>± 1 LU</td></tr>
+        <tr><td>True Peak máximo</td><td><strong>−2 dBTP</strong></td></tr>
+        <tr><td>Loudness Re-Render (lab)</td><td>5.1</td></tr>
+        <tr><td>Headphone Re-Render (lab)</td><td>Binaural</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>Para el Día 3:</strong> profundizaremos en loudness, Trim/Downmix, y Program vs Dynamic Metadata. Hoy lo fundamental es entender que la referencia de medición es el re-render 5.1, no el mix completo.
+  </div>
+</section>
+</div>
+</div>
+
+<div class="footer">
+  <div class="footer-nav">
+    <a class="footer-link" href="https://prvtvd.github.io/curso-dolby-atmos/dia1_teoria_dolby_atmos.html">← Día 1 · Teoría</a>
+    <a class="footer-link" href="https://prvtvd.github.io/curso-dolby-atmos/">Inicio</a>
+    <a class="footer-link" href="#">Día 3 · Teoría →</a>
+  </div>
+  <div class="footer-copy">Curso Introductorio Dolby Atmos · Día 2 de 5</div>
+</div>
+
+<script>
+// NAV
+const secs = document.querySelectorAll('section[id]');
+const nls = document.querySelectorAll('.nav-link');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  secs.forEach(s=>{if(window.scrollY>=s.offsetTop-80)cur=s.id;});
+  nls.forEach(l=>l.classList.toggle('act',l.getAttribute('href')==='#'+cur));
+});
+
+// OFFSET STRIP
+const strip=document.getElementById('oStrip');
+for(let i=1;i<=22;i++){
+  const c=document.createElement('div');
+  c.className='o-cell '+(i<=10?'o-bed':i<=20?'o-obj':'o-dim');
+  c.textContent=i<=20?i:(i===21?'…':'');
+  strip.appendChild(c);
+}
+const last=document.createElement('div');
+last.className='o-cell o-obj';last.textContent='128';strip.appendChild(last);
+
+// PANNER
+const stage=document.getElementById('pStage'),dot=document.getElementById('pDot');
+const cX=document.getElementById('cX'),cY=document.getElementById('cY'),cZ=document.getElementById('cZ');
+const sSlider=document.getElementById('sSlider'),sV=document.getElementById('sV');
+let drag=false;
+function getPos(e,el){
+  const r=el.getBoundingClientRect();
+  const cx=e.touches?e.touches[0].clientX:e.clientX;
+  const cy=e.touches?e.touches[0].clientY:e.clientY;
+  return{x:((cx-r.left)/r.width)*100,y:((cy-r.top)/r.height)*100};
+}
+function updDot(x,y){
+  const px=Math.max(5,Math.min(95,x)),py=Math.max(5,Math.min(95,y));
+  dot.style.left=px+'%';dot.style.top=py+'%';
+  const xv=((px-50)/50).toFixed(2);
+  const yv=(py/100).toFixed(2);
+  cX.textContent=(xv>=0?'+':'')+xv;
+  cY.textContent='+'+yv;
+}
+dot.addEventListener('mousedown',e=>{drag=true;e.preventDefault();});
+dot.addEventListener('touchstart',e=>{drag=true;e.preventDefault();},{passive:false});
+window.addEventListener('mousemove',e=>{if(drag){const p=getPos(e,stage);updDot(p.x,p.y);}});
+window.addEventListener('touchmove',e=>{if(drag){const p=getPos(e,stage);updDot(p.x,p.y);}},{passive:false});
+window.addEventListener('mouseup',()=>drag=false);
+window.addEventListener('touchend',()=>drag=false);
+stage.addEventListener('click',e=>{const p=getPos(e,stage);updDot(p.x,p.y);});
+updDot(50,20);
+cZ.textContent='+0.00';
+sSlider.addEventListener('input',()=>sV.textContent=(sSlider.value/100).toFixed(2));
+
+// BINAURAL MODES
+const bmDetails={
+  off:'<strong>Off:</strong> panning solo por nivel — similar a un pan estéreo convencional. En este modo el parámetro X representa el valor de paneo. No hay HRTF ni simulación de sala.',
+  near:'<strong>Near:</strong> aplica una simulación precisa de la función de transferencia acústica desde el Object hacia los oídos del oyente (HRTF). Sin simulación de sala — el Object suena cerca y seco.',
+  mid:'<strong>Mid:</strong> Near + una simulación suave de sala optimizada para dar cues sutiles de distancia preservando el timbre del Object. La simulación se vuelve más pronunciada cuanto más lejos esté el Object del oyente.',
+  far:'<strong>Far:</strong> similar a Mid pero con una simulación de sala más pronunciada — mayor sensación de distancia percibida. Ideal para elementos que ya tienen reverb o que pertenecen al fondo de la mezcla.'
+};
+function selBM(card,mode){
+  document.querySelectorAll('.bm-card').forEach(c=>c.classList.remove('sel'));
+  card.classList.add('sel');
+  const d=document.getElementById('bmDetail');
+  d.innerHTML=bmDetails[mode];
+  d.classList.add('show');
+}
+
+// MONITORING TABS
+function setMon(id,btn){
+  document.querySelectorAll('.mon-panel').forEach(p=>p.classList.remove('act'));
+  document.querySelectorAll('.mon-tab').forEach(b=>b.classList.remove('act'));
+  document.getElementById('mon-'+id).classList.add('act');
+  btn.classList.add('act');
+}
+</script>
+</body>
+</html>
